@@ -3516,3 +3516,25 @@ main,
         @apply px-2.5 py-2;
     }
 }
+
+/* ── Project Progress (public) ─────────────────────────────────────── */
+
+.sh-prog-overall {
+    @apply mt-6 rounded-xl border border-white/10 bg-[#32363e] px-4 py-4;
+}
+
+.sh-prog-overall-head {
+    @apply mb-2 flex items-center justify-between gap-3;
+}
+
+.sh-prog-overall-pct {
+    @apply text-lg font-bold text-[#f0a35a];
+}
+
+.sh-prog-bar {
+    @apply h-3 w-full overflow-hidden rounded-full bg-white/10;
+}
+
+.sh-prog-bar-fill {
+    @apply h-full rounded-full bg-gradient-to-r from-[#f97316] to-[#f0a35a] transition-[width] duration-500;
+}

@@ -19,7 +19,7 @@
             </a>
             <div class="sh-pay-topbar-meta">
                 <span class="sh-pay-pill">{{ $payment['client']['invoice_ref'] }}</span>
-                <a href="{{ url('/contact') }}" class="sh-pay-link">Support</a>
+                <a href="{{ url('/project-progress') }}" class="sh-pay-link">Progress</a>
             </div>
         </div>
     </header>
