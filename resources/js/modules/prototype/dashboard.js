@@ -1,4 +1,6 @@
-import { getCurrentUser } from '../auth/auth.js';
+import { getCurrentUser, openAuthModal } from '../auth/auth.js';
+import { restorePortalUser, userHasAnyRole } from '../auth/portal-auth.js';
+import { showToast } from '../landing/toast.js';
 import { CONDITION_LABELS, formatMoney, loadState } from './state.js';
 
 const DASH_TABS = [
@@ -186,6 +188,14 @@ export function initDashboard() {
     });
 
     window.addEventListener('smoovehub:dashboard-refresh', refreshDashboard);
-    refreshDashboard();
-    dashTab('overview');
+
+    Promise.resolve(restorePortalUser()).then((user) => {
+        if (!userHasAnyRole(user || getCurrentUser(), ['seller'])) {
+            showToast('Seller sign-in required', 'Sign in with a seller account to use the dashboard.', 'warn');
+            openAuthModal('login');
+        }
+
+        refreshDashboard();
+        dashTab('overview');
+    });
 }

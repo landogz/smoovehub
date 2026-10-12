@@ -27,8 +27,8 @@ class ProjectProgressRepository
                 [
                     'id' => 1,
                     'name' => 'Phase 1 — Security',
-                    'summary' => 'Portal role gates, remove demo passwords from HTML, API rate limits.',
-                    'status' => 'upcoming',
+                    'summary' => 'Portal Sanctum login + role gates for admin/distribute/dashboard; API rate limits. Demo accounts kept for fill-demo.',
+                    'status' => 'done',
                 ],
                 [
                     'id' => 2,
@@ -80,6 +80,12 @@ class ProjectProgressRepository
                 ],
             ],
             'history' => [
+                [
+                    'date' => '2026-10-13',
+                    'title' => 'Phase 1 — Security',
+                    'detail' => 'Admin/distribute/dashboard now authenticate via Sanctum with role checks. Demo fill accounts kept. API throttle registered.',
+                    'status' => 'shipped',
+                ],
                 [
                     'date' => '2026-10-12',
                     'title' => 'Public progress tracker',

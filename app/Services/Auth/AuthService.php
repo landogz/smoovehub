@@ -5,6 +5,7 @@ namespace App\Services\Auth;
 use App\Models\User;
 use App\Repositories\Auth\AuthRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -70,6 +71,12 @@ class AuthService
     {
         $this->repository->revokeCurrentToken($user);
 
+        if ($request->hasSession()) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
         $this->repository->logActivity(
             $user,
             'auth.logout',
@@ -126,6 +133,11 @@ class AuthService
             $request->ip(),
             (string) $request->userAgent(),
         );
+
+        if ($request->hasSession()) {
+            Auth::guard('web')->login($user);
+            $request->session()->regenerate();
+        }
 
         return [
             'token' => $issued['token'],

@@ -1,6 +1,15 @@
 import { getCurrentUser } from '../auth/auth.js';
+import {
+    portalAuthErrorMessage,
+    portalLogin,
+    portalLogout,
+    restorePortalUser,
+    userHasAnyRole,
+} from '../auth/portal-auth.js';
 import { showToast } from '../landing/toast.js';
 import { hideOverlayModal, showOverlayModal, showPortalDashboard, showPortalLogin } from './portal-screen.js';
+
+const DIST_ROLES = ['distribution-partner'];
 
 const STORAGE_SESSION = 'smoovehub_dist_session';
 const STORAGE_INVENTORY = 'smoovehub_dist_inventory';
@@ -769,29 +778,59 @@ function distRenderSettings() {
         </div>`;
 }
 
-function distLogin() {
+async function distLogin() {
     const em = document.getElementById('dist-email')?.value.trim().toLowerCase() ?? '';
     const pw = document.getElementById('dist-pass')?.value ?? '';
     const err = document.getElementById('dist-login-err');
+    const submit = document.querySelector('[data-dist-action="login"]');
 
     if (!em || !pw) {
         if (err) { err.textContent = 'Enter email and password.'; err.classList.remove('hidden'); }
         return;
     }
 
-    const acct = DIST_ACCOUNTS[em];
-    if (!acct || acct.pass !== pw) {
-        if (err) { err.textContent = 'Invalid credentials.'; err.classList.remove('hidden'); }
-        return;
-    }
+    submit?.setAttribute('disabled', 'disabled');
 
-    err?.classList.add('hidden');
-    DIST_USER = { email: em, ...acct };
-    persistSession();
-    showPortal();
-    updateUserDisplay();
-    distSwitchTab('overview');
-    showToast('Welcome back!', `${DIST_USER.company} 🏭`, 'success');
+    try {
+        const user = await portalLogin(em, pw);
+
+        if (!userHasAnyRole(user, DIST_ROLES)) {
+            await portalLogout();
+            if (err) {
+                err.textContent = 'This account is not a distribution partner.';
+                err.classList.remove('hidden');
+            }
+            showToast('Access denied', 'Distribution partner role required.', 'error');
+            return;
+        }
+
+        const demo = DIST_ACCOUNTS[em] ?? {};
+        const companyFromApi = user.distribution_company?.company_name
+            ?? user.name
+            ?? 'Distribution Partner';
+
+        err?.classList.add('hidden');
+        DIST_USER = {
+            email: user.email ?? em,
+            company: demo.company ?? companyFromApi,
+            role: demo.role ?? 'Distribution Partner',
+            initials: demo.initials ?? user.avatar_initials ?? 'DP',
+            tier: demo.tier ?? user.distribution_company?.tier ?? 'Starter',
+        };
+        persistSession();
+        showPortal();
+        updateUserDisplay();
+        distSwitchTab('overview');
+        showToast('Welcome back!', `${DIST_USER.company} 🏭`, 'success');
+    } catch (error) {
+        if (err) {
+            err.textContent = portalAuthErrorMessage(error);
+            err.classList.remove('hidden');
+        }
+        showToast('Sign in failed', portalAuthErrorMessage(error), 'error');
+    } finally {
+        submit?.removeAttribute('disabled');
+    }
 }
 
 function distRegister() {
@@ -824,7 +863,8 @@ function distRegister() {
     showToast('Account created!', 'Welcome to SmooveHub Distribution 🏭', 'success');
 }
 
-function distLogout() {
+async function distLogout() {
+    await portalLogout();
     DIST_USER = null;
     persistSession();
     hidePortal();
@@ -1111,35 +1151,29 @@ function dqSendToBoard(board) {
     distRenderDeliveryQuote();
 }
 
-function restoreSession() {
-    const apiUser = getCurrentUser();
-    if (apiUser?.primary_role === 'distribution-partner' || apiUser?.primary_role === 'admin' || apiUser?.primary_role === 'super-admin') {
+async function restoreSession() {
+    const apiUser = getCurrentUser() || await restorePortalUser();
+
+    if (userHasAnyRole(apiUser, DIST_ROLES)) {
+        const demo = DIST_ACCOUNTS[apiUser.email] ?? {};
         DIST_USER = {
             email: apiUser.email,
-            company: apiUser.seller_profile?.store_name ?? apiUser.name ?? 'Distribution Partner',
-            role: 'Distribution Partner',
-            initials: apiUser.avatar_initials ?? 'DP',
-            tier: 'Enterprise',
+            company: demo.company
+                ?? apiUser.distribution_company?.company_name
+                ?? apiUser.name
+                ?? 'Distribution Partner',
+            role: demo.role ?? 'Distribution Partner',
+            initials: demo.initials ?? apiUser.avatar_initials ?? 'DP',
+            tier: demo.tier ?? apiUser.distribution_company?.tier ?? 'Enterprise',
         };
+        persistSession();
         showPortal();
         updateUserDisplay();
         distSwitchTab('overview');
         return true;
     }
 
-    const saved = localStorage.getItem(STORAGE_SESSION);
-    if (saved) {
-        try {
-            DIST_USER = JSON.parse(saved);
-            showPortal();
-            updateUserDisplay();
-            distSwitchTab('overview');
-            return true;
-        } catch {
-            /* ignore */
-        }
-    }
-
+    localStorage.removeItem(STORAGE_SESSION);
     return false;
 }
 
@@ -1241,7 +1275,9 @@ export function initDistributePortal() {
 
     bindEvents();
 
-    if (!restoreSession()) {
-        hidePortal();
-    }
+    Promise.resolve(restoreSession()).then((ok) => {
+        if (!ok) {
+            hidePortal();
+        }
+    });
 }

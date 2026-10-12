@@ -33,9 +33,15 @@ Route::controller(SitePageController::class)->group(function (): void {
     Route::get('/drive', 'drive')->name('site.drive');
     Route::get('/design-room', 'designRoom')->name('site.design-room');
     Route::get('/design-me', 'designMe')->name('site.design-me');
-    Route::get('/dashboard', 'dashboard')->name('site.dashboard');
-    Route::get('/distribute', 'distribute')->name('site.distribute');
-    Route::get('/admin', 'admin')->name('site.admin');
+    Route::get('/dashboard', 'dashboard')
+        ->middleware('role:seller')
+        ->name('site.dashboard');
+    Route::get('/distribute', 'distribute')
+        ->middleware('role:distribution-partner')
+        ->name('site.distribute');
+    Route::get('/admin', 'admin')
+        ->middleware('role:admin,super-admin')
+        ->name('site.admin');
 });
 
 Route::redirect('/landing', '/')->name('landing.index');

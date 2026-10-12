@@ -1,9 +1,17 @@
 import { getCurrentUser } from '../auth/auth.js';
+import {
+    portalAuthErrorMessage,
+    portalLogin,
+    portalLogout,
+    restorePortalUser,
+    userHasAnyRole,
+} from '../auth/portal-auth.js';
 import { showToast } from '../landing/toast.js';
 import { showPortalDashboard, showPortalLogin } from './portal-screen.js';
 
 const STORAGE_SESSION = 'smoovehub_admin_session';
 const STORAGE_SHOP_PRODS = 'sh_admin_prods';
+const ADMIN_ROLES = ['admin', 'super-admin'];
 
 let config = {};
 let ADM_CREDENTIALS = {};
@@ -735,31 +743,53 @@ function admRenderSettings() {
         </div>`;
 }
 
-function adminLogin() {
+async function adminLogin() {
     const em = document.getElementById('adm-email')?.value.trim().toLowerCase() ?? '';
     const pw = document.getElementById('adm-pass')?.value ?? '';
     const err = document.getElementById('adm-err');
+    const submit = document.querySelector('[data-adm-action="login"]');
 
     if (!em || !pw) {
         if (err) { err.textContent = 'Enter email and password.'; err.classList.remove('hidden'); }
         return;
     }
-    if (!ADM_CREDENTIALS[em] || ADM_CREDENTIALS[em] !== pw) {
-        if (err) { err.textContent = 'Invalid credentials.'; err.classList.remove('hidden'); }
-        return;
-    }
 
-    err?.classList.add('hidden');
-    ADM_USER = em;
-    persistSession();
-    const nameEl = document.getElementById('adm-user-name');
-    if (nameEl) nameEl.textContent = em.split('@')[0];
-    showPortal();
-    admTab('adm-overview');
-    showToast('Welcome back!', 'Admin portal access granted.', 'success');
+    submit?.setAttribute('disabled', 'disabled');
+
+    try {
+        const user = await portalLogin(em, pw);
+
+        if (!userHasAnyRole(user, ADMIN_ROLES)) {
+            await portalLogout();
+            if (err) {
+                err.textContent = 'This account is not an admin.';
+                err.classList.remove('hidden');
+            }
+            showToast('Access denied', 'Admin role required.', 'error');
+            return;
+        }
+
+        err?.classList.add('hidden');
+        ADM_USER = user.email ?? em;
+        persistSession();
+        const nameEl = document.getElementById('adm-user-name');
+        if (nameEl) nameEl.textContent = (user.name || ADM_USER).split('@')[0];
+        showPortal();
+        admTab('adm-overview');
+        showToast('Welcome back!', 'Admin portal access granted.', 'success');
+    } catch (error) {
+        if (err) {
+            err.textContent = portalAuthErrorMessage(error);
+            err.classList.remove('hidden');
+        }
+        showToast('Sign in failed', portalAuthErrorMessage(error), 'error');
+    } finally {
+        submit?.removeAttribute('disabled');
+    }
 }
 
-function adminLogout() {
+async function adminLogout() {
+    await portalLogout();
     ADM_USER = null;
     persistSession();
     hidePortal();
@@ -781,28 +811,20 @@ function showAdminForgot() {
     showToast('Reset code sent', 'Check your email for the verification code.', 'success');
 }
 
-function restoreSession() {
-    const apiUser = getCurrentUser();
-    if (apiUser?.primary_role === 'admin' || apiUser?.primary_role === 'super-admin') {
+async function restoreSession() {
+    const apiUser = getCurrentUser() || await restorePortalUser();
+
+    if (userHasAnyRole(apiUser, ADMIN_ROLES)) {
         ADM_USER = apiUser.email ?? 'admin@smoovehub.com';
         persistSession();
         const nameEl = document.getElementById('adm-user-name');
-        if (nameEl) nameEl.textContent = ADM_USER.split('@')[0];
+        if (nameEl) nameEl.textContent = (apiUser.name || ADM_USER).split('@')[0];
         showPortal();
         admTab('adm-overview');
         return true;
     }
 
-    const saved = localStorage.getItem(STORAGE_SESSION);
-    if (saved && ADM_CREDENTIALS[saved]) {
-        ADM_USER = saved;
-        const nameEl = document.getElementById('adm-user-name');
-        if (nameEl) nameEl.textContent = ADM_USER.split('@')[0];
-        showPortal();
-        admTab('adm-overview');
-        return true;
-    }
-
+    localStorage.removeItem(STORAGE_SESSION);
     return false;
 }
 
@@ -948,5 +970,7 @@ function bindEvents() {
 export function initAdminPortal() {
     if (!loadConfig()) return;
     bindEvents();
-    if (!restoreSession()) hidePortal();
+    Promise.resolve(restoreSession()).then((ok) => {
+        if (!ok) hidePortal();
+    });
 }

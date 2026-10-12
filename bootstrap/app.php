@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(EnsureAppInstalled::class);
         $middleware->alias([
             'install.redirect_if_installed' => \App\Http\Middleware\RedirectIfInstalled::class,
+            'role' => \App\Http\Middleware\EnsureUserHasRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
