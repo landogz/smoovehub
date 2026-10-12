@@ -65,8 +65,61 @@
                 </div>
             </section>
 
+            <section class="sh-pay-section" aria-labelledby="portals-heading">
+                <h2 id="portals-heading" class="sh-pay-section-title">1. Portals</h2>
+                <div class="sh-pay-rule" aria-hidden="true"></div>
+
+                <div class="sh-pay-table-wrap">
+                    <table class="sh-pay-table">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="sh-pay-th sh-pay-th-left">Portal</th>
+                                <th scope="col" class="sh-pay-th sh-pay-th-left">Audience</th>
+                                <th scope="col" class="sh-pay-th sh-pay-th-left">UI</th>
+                                <th scope="col" class="sh-pay-th sh-pay-th-left">Auth</th>
+                                <th scope="col" class="sh-pay-th sh-pay-th-left">Data</th>
+                                <th scope="col" class="sh-pay-th sh-pay-th-left">Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($progress['portals'] ?? [] as $portal)
+                                <tr>
+                                    <td class="sh-pay-td sh-pay-td-left">
+                                        <div class="sh-pay-milestone-name">{{ $portal['name'] }}</div>
+                                        <a href="{{ url($portal['path']) }}" class="sh-pay-link text-xs">{{ $portal['path'] }}</a>
+                                    </td>
+                                    <td class="sh-pay-td sh-pay-td-left">{{ $portal['audience'] }}</td>
+                                    <td class="sh-pay-td sh-pay-td-left">
+                                        <span @class([
+                                            'sh-pay-status',
+                                            'sh-pay-status-paid' => ($portal['ui_status'] ?? '') === 'live',
+                                            'sh-pay-status-upcoming' => ($portal['ui_status'] ?? '') !== 'live',
+                                        ])>{{ ucfirst($portal['ui_status']) }}</span>
+                                    </td>
+                                    <td class="sh-pay-td sh-pay-td-left">
+                                        <span @class([
+                                            'sh-pay-status',
+                                            'sh-pay-status-paid' => ($portal['auth_status'] ?? '') === 'secured',
+                                            'sh-pay-status-due' => ($portal['auth_status'] ?? '') === 'open',
+                                        ])>{{ ucfirst($portal['auth_status']) }}</span>
+                                    </td>
+                                    <td class="sh-pay-td sh-pay-td-left">
+                                        <span @class([
+                                            'sh-pay-status',
+                                            'sh-pay-status-paid' => ($portal['data_status'] ?? '') === 'production',
+                                            'sh-pay-status-due' => ($portal['data_status'] ?? '') === 'prototype',
+                                        ])>{{ ucfirst($portal['data_status']) }}</span>
+                                    </td>
+                                    <td class="sh-pay-td sh-pay-td-left">{{ $portal['notes'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
             <section class="sh-pay-section" aria-labelledby="phases-heading">
-                <h2 id="phases-heading" class="sh-pay-section-title">1. Roadmap Phases</h2>
+                <h2 id="phases-heading" class="sh-pay-section-title">2. Roadmap Phases</h2>
                 <div class="sh-pay-rule" aria-hidden="true"></div>
 
                 <div class="sh-pay-table-wrap">
@@ -105,7 +158,7 @@
             </section>
 
             <section class="sh-pay-section" aria-labelledby="history-heading">
-                <h2 id="history-heading" class="sh-pay-section-title">2. Update History</h2>
+                <h2 id="history-heading" class="sh-pay-section-title">3. Update History</h2>
                 <div class="sh-pay-rule" aria-hidden="true"></div>
 
                 <div class="sh-pay-table-wrap">

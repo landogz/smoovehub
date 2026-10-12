@@ -44,20 +44,20 @@ class ProjectProgressRepository
                 ],
                 [
                     'id' => 4,
-                    'name' => 'Phase 4 — Seller SPA',
-                    'summary' => 'Seller product CRUD, orders, settings, media upload.',
+                    'name' => 'Phase 4 — Member Dashboard',
+                    'summary' => 'Seller/member dashboard: product CRUD, orders, settings, media upload (full API).',
                     'status' => 'upcoming',
                 ],
                 [
                     'id' => 5,
                     'name' => 'Phase 5 — Distribution Portal',
-                    'summary' => 'Real inventory, orders, payouts, and API keys against DB.',
+                    'summary' => 'Distribution portal: real inventory, orders, payouts, and API keys against DB.',
                     'status' => 'upcoming',
                 ],
                 [
                     'id' => 6,
                     'name' => 'Phase 6 — Admin Portal',
-                    'summary' => 'Sanctum admin APIs + RBAC; replace mock admin data.',
+                    'summary' => 'Admin portal: live APIs + RBAC; replace mock admin data.',
                     'status' => 'upcoming',
                 ],
                 [
@@ -79,7 +79,42 @@ class ProjectProgressRepository
                     'status' => 'upcoming',
                 ],
             ],
+            'portals' => [
+                [
+                    'name' => 'Admin Portal',
+                    'path' => '/admin',
+                    'audience' => 'Platform admins & super-admins',
+                    'ui_status' => 'live',
+                    'auth_status' => 'secured',
+                    'data_status' => 'prototype',
+                    'notes' => 'UI live; Sanctum + admin role required. Mock data until Phase 6.',
+                ],
+                [
+                    'name' => 'Distribution Portal',
+                    'path' => '/distribute',
+                    'audience' => 'Distribution partners',
+                    'ui_status' => 'live',
+                    'auth_status' => 'secured',
+                    'data_status' => 'prototype',
+                    'notes' => 'UI live; Sanctum + distribution-partner role required. Mock/localStorage until Phase 5.',
+                ],
+                [
+                    'name' => 'Member Dashboard',
+                    'path' => '/dashboard',
+                    'audience' => 'Sellers / members',
+                    'ui_status' => 'live',
+                    'auth_status' => 'secured',
+                    'data_status' => 'prototype',
+                    'notes' => 'Seller dashboard UI live; seller sign-in required. Full CRUD/APIs in Phase 4.',
+                ],
+            ],
             'history' => [
+                [
+                    'date' => '2026-10-13',
+                    'title' => 'Portal tracker on progress page',
+                    'detail' => 'Documented Admin Portal, Distribution Portal, and Member Dashboard status (UI live, auth secured, data still prototype).',
+                    'status' => 'shipped',
+                ],
                 [
                     'date' => '2026-10-13',
                     'title' => 'Phase 1 — Security',
