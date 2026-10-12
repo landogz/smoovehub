@@ -9,6 +9,7 @@ if (csrfToken) {
 
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 axios.defaults.headers.common['Accept'] = 'application/json';
+axios.defaults.withCredentials = true;
 
 function initCookieBar() {
     const bar = document.getElementById('cookie-bar');
