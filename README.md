@@ -21,20 +21,6 @@ npm run build
 
 Create an empty MySQL database (for example `smoovehub`), then open the web installer.
 
-## Auto-deploy (GitHub → IONOS)
-
-Pushes to `main` trigger [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), which pulls on the server and uploads `public/build`.
-
-Add these **GitHub → Settings → Secrets and variables → Actions** secrets:
-
-| Secret | Example |
-|--------|---------|
-| `SSH_HOST` | `access-5017961219.webspace-host.com` |
-| `SSH_USER` | `a970971` |
-| `SSH_PASSWORD` | *(your SSH password)* |
-| `SSH_PORT` | `22` |
-| `SSH_PATH` | `/homepages/32/d4299061785/htdocs/smoovehub` |
-
 ## Web installer
 
 1. Point your web server document root at `public/` (XAMPP: `http://localhost/Lamar/smoovehub/public`).
