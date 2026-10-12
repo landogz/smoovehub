@@ -1,12 +1,16 @@
 <?php
 
 use App\Http\Controllers\Web\Install\InstallPageController;
+use App\Http\Controllers\Web\Site\ClientPayment\ClientPaymentPageController;
 use App\Http\Controllers\Web\Site\SitePageController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/install', [InstallPageController::class, 'index'])
     ->middleware('install.redirect_if_installed')
     ->name('install.index');
+
+Route::get('/client-payment', [ClientPaymentPageController::class, 'index'])
+    ->name('site.client-payment');
 
 Route::controller(SitePageController::class)->group(function (): void {
     Route::get('/', 'home')->name('site.home');

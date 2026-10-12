@@ -3329,3 +3329,190 @@ main,
         @apply border-b border-white/10;
     }
 }
+
+/* ── Client Payment (public) ───────────────────────────────────────── */
+
+.sh-pay-body {
+    @apply min-h-screen bg-[#2a2e35] text-white antialiased;
+}
+
+.sh-pay-container {
+    @apply mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10;
+}
+
+.sh-pay-topbar {
+    @apply border-b border-white/10 bg-[#23272e]/90 backdrop-blur;
+}
+
+.sh-pay-topbar-inner {
+    @apply flex items-center justify-between gap-4 py-4;
+}
+
+.sh-pay-brand {
+    @apply inline-flex items-center;
+}
+
+.sh-pay-logo {
+    @apply h-8 w-auto sm:h-9;
+}
+
+.sh-pay-topbar-meta {
+    @apply flex items-center gap-3;
+}
+
+.sh-pay-pill {
+    @apply rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-bold tracking-wide text-white/80;
+}
+
+.sh-pay-link {
+    @apply text-sm font-semibold text-[#f0a35a] no-underline transition hover:text-[#ffb86b];
+}
+
+.sh-pay-main {
+    @apply pb-10;
+}
+
+.sh-pay-intro {
+    @apply mb-8 sm:mb-10;
+}
+
+.sh-pay-eyebrow {
+    @apply mb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-white/45;
+}
+
+.sh-pay-title {
+    font-family: var(--font-display);
+    @apply m-0 text-3xl font-extrabold tracking-tight text-white sm:text-4xl;
+}
+
+.sh-pay-subtitle {
+    @apply mt-2 max-w-2xl text-sm text-white/65 sm:text-base;
+}
+
+.sh-pay-meta-grid {
+    @apply mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5;
+}
+
+.sh-pay-meta-card {
+    @apply rounded-xl border border-white/10 bg-[#32363e] px-4 py-3;
+}
+
+.sh-pay-meta-label {
+    @apply block text-[11px] font-bold uppercase tracking-wide text-white/40;
+}
+
+.sh-pay-meta-value {
+    @apply mt-1 block text-sm font-semibold text-white;
+}
+
+.sh-pay-meta-value-ok {
+    @apply text-emerald-400;
+}
+
+.sh-pay-meta-value-accent {
+    @apply text-[#c47a2e];
+}
+
+.sh-pay-meta-value-pending {
+    @apply text-amber-300;
+}
+
+.sh-pay-section {
+    @apply mb-10 sm:mb-12;
+}
+
+.sh-pay-section-title {
+    @apply m-0 text-xl font-bold text-white sm:text-2xl;
+}
+
+.sh-pay-rule {
+    @apply mt-2 mb-4 h-px w-full bg-[#c0392b];
+}
+
+.sh-pay-table-wrap {
+    @apply overflow-x-auto rounded-sm border border-[#1f2329] [-webkit-overflow-scrolling:touch];
+}
+
+.sh-pay-table {
+    @apply w-full min-w-[640px] border-collapse text-sm;
+}
+
+.sh-pay-th {
+    @apply border border-[#c5ccd8] bg-[#dfe4ee] px-3 py-2.5 text-[13px] font-bold text-[#2f3640] sm:px-4;
+}
+
+.sh-pay-th-left {
+    @apply text-left;
+}
+
+.sh-pay-th-right {
+    @apply text-right;
+}
+
+.sh-pay-td {
+    @apply border border-[#4a505a] bg-[#32363e] px-3 py-3 align-top text-[13px] text-white sm:px-4 sm:text-sm;
+}
+
+.sh-pay-td-left {
+    @apply text-left;
+}
+
+.sh-pay-td-right {
+    @apply text-right;
+}
+
+.sh-pay-milestone-name {
+    @apply font-semibold text-white;
+}
+
+.sh-pay-amount {
+    @apply font-bold;
+}
+
+.sh-pay-tf {
+    @apply border border-[#c5ccd8] bg-[#dfe4ee] px-3 py-2.5 text-[13px] font-bold text-[#2f3640] sm:px-4 sm:text-sm;
+}
+
+.sh-pay-tf-left {
+    @apply text-left;
+}
+
+.sh-pay-tf-right {
+    @apply text-right;
+}
+
+.sh-pay-tf-accent {
+    @apply text-[#b26e27];
+}
+
+.sh-pay-status {
+    @apply mt-1.5 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide;
+}
+
+.sh-pay-status-paid {
+    @apply bg-emerald-500/20 text-emerald-300;
+}
+
+.sh-pay-status-due {
+    @apply bg-amber-500/20 text-amber-300;
+}
+
+.sh-pay-status-upcoming {
+    @apply bg-white/10 text-white/70;
+}
+
+.sh-pay-footer-note {
+    @apply text-center text-xs text-white/45;
+}
+
+@media (max-width: 639px) {
+    .sh-pay-table {
+        @apply min-w-[560px] text-[12px];
+    }
+
+    .sh-pay-th,
+    .sh-pay-td,
+    .sh-pay-tf {
+        @apply px-2.5 py-2;
+    }
+}
