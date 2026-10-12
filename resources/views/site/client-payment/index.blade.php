@@ -145,10 +145,6 @@
                 </div>
             </section>
 
-            <p class="sh-pay-footer-note">
-                Questions about an invoice or transfer? Contact
-                <a href="mailto:payments@smoovehub.com" class="sh-pay-link">payments@smoovehub.com</a>
-            </p>
         </div>
     </main>
 </body>
