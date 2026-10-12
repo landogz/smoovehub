@@ -45,6 +45,27 @@ class ProjectProgressService
             ? (int) round(array_sum($scores) / count($scores))
             : 0;
 
+        $moduleTotal = 0;
+        $modulePrototype = 0;
+        $moduleProduction = 0;
+        $moduleUpcoming = 0;
+
+        foreach ($page['portals'] ?? [] as $portalIndex => $portal) {
+            $modules = $portal['modules'] ?? [];
+            $page['portals'][$portalIndex]['module_count'] = count($modules);
+
+            foreach ($modules as $module) {
+                $moduleTotal++;
+                match ($module['status'] ?? 'upcoming') {
+                    'production' => $moduleProduction++,
+                    'prototype' => $modulePrototype++,
+                    default => $moduleUpcoming++,
+                };
+            }
+        }
+
+        $surfaceTotal = count($page['surfaces'] ?? []);
+
         $page['phases'] = $phases;
         $page['overall_percent'] = $overall;
         $page['counts'] = [
@@ -52,6 +73,11 @@ class ProjectProgressService
             'in_progress' => $inProgress,
             'upcoming' => $upcoming,
             'total' => count($phases),
+            'modules' => $moduleTotal,
+            'modules_prototype' => $modulePrototype,
+            'modules_production' => $moduleProduction,
+            'modules_upcoming' => $moduleUpcoming,
+            'surfaces' => $surfaceTotal,
         ];
 
         return $page;
