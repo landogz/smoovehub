@@ -42,6 +42,17 @@ After success you are redirected to `/admin`.
 
 To re-run the installer (local/dev only), delete `storage/app/installed` and refresh `/install`.
 
+## Under maintenance
+
+Set these in `.env` and reload PHP (no `artisan down` required):
+
+```
+SITE_MAINTENANCE=true
+SITE_MAINTENANCE_MESSAGE="SmooveHub is undergoing scheduled maintenance. Please check back shortly."
+```
+
+Marketplace, portals, and APIs return HTTP 503 with the branded page. `/install`, `/up`, `/client-payment`, and `/project-progress` stay reachable. Optionally set `SITE_MAINTENANCE_BYPASS` and visit `/?bypass=TOKEN` to keep working.
+
 ## CLI setup alternative
 
 ```bash

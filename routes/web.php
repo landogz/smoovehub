@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Web\Install\InstallPageController;
 use App\Http\Controllers\Web\Site\ClientPayment\ClientPaymentPageController;
+use App\Http\Controllers\Web\Site\Maintenance\MaintenancePageController;
 use App\Http\Controllers\Web\Site\ProjectProgress\ProjectProgressPageController;
 use App\Http\Controllers\Web\Site\SitePageController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,9 @@ Route::get('/client-payment', [ClientPaymentPageController::class, 'index'])
 
 Route::get('/project-progress', [ProjectProgressPageController::class, 'index'])
     ->name('site.project-progress');
+
+Route::get('/maintenance', [MaintenancePageController::class, 'index'])
+    ->name('site.maintenance');
 
 Route::controller(SitePageController::class)->group(function (): void {
     Route::get('/', 'home')->name('site.home');

@@ -3538,3 +3538,17 @@ main,
 .sh-prog-bar-fill {
     @apply h-full rounded-full bg-gradient-to-r from-[#f97316] to-[#f0a35a] transition-[width] duration-500;
 }
+
+/* ── Under maintenance (public) ────────────────────────────────────── */
+
+.sh-maint-main {
+    @apply flex min-h-[70vh] items-center;
+}
+
+.sh-maint-card {
+    @apply mx-auto max-w-xl rounded-2xl border border-white/10 bg-[#32363e] px-6 py-10 text-center sm:px-10;
+}
+
+.sh-maint-message {
+    @apply mt-4 text-sm text-white/70 sm:text-base;
+}

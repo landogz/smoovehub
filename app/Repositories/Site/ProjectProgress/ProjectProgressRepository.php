@@ -177,8 +177,15 @@ class ProjectProgressRepository
                 ['name' => 'Ms. Dolores AI', 'path' => '(widget)', 'detail' => 'Chat assistant; server-proxied Anthropic', 'status' => 'prototype', 'phase' => 8],
                 ['name' => 'Markup Engine', 'path' => '(pricing)', 'detail' => 'B2B reseller + B2C backend markups (Docs Blueprint)', 'status' => 'upcoming', 'phase' => 2],
                 ['name' => 'Payout Split Engine', 'path' => '(webhooks)', 'detail' => 'Seller + distributor + CRS fee on DELIVERED', 'status' => 'upcoming', 'phase' => 5],
+                ['name' => 'Under Maintenance', 'path' => '/maintenance', 'detail' => 'SITE_MAINTENANCE env toggle; marketplace 503. Client payment + progress stay open.', 'status' => 'production', 'phase' => 9],
             ],
             'history' => [
+                [
+                    'date' => '2026-10-15',
+                    'title' => 'Under-maintenance page',
+                    'detail' => 'Added SITE_MAINTENANCE env flag. Marketplace/portals/APIs return 503; client payment and project progress stay reachable.',
+                    'status' => 'shipped',
+                ],
                 [
                     'date' => '2026-10-13',
                     'title' => 'Progress aligned to Docs inventory',

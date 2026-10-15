@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureAppInstalled;
+use App\Http\Middleware\EnsureSiteNotInMaintenance;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
         $middleware->append(EnsureAppInstalled::class);
+        $middleware->append(EnsureSiteNotInMaintenance::class);
         $middleware->alias([
             'install.redirect_if_installed' => \App\Http\Middleware\RedirectIfInstalled::class,
             'role' => \App\Http\Middleware\EnsureUserHasRole::class,
