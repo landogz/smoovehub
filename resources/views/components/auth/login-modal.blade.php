@@ -63,7 +63,8 @@
         </p>
 
         <div class="rounded-[10px] border border-sh-s200 bg-sh-s50 px-3 py-2.5 text-[12px] leading-relaxed text-sh-s600">
-            Demo: <strong>demo@smoovehub.com</strong> / <strong>Demo1234!</strong>
+            Shop (member): <strong>member@smoovehub.com</strong> / <strong>Member1234!</strong><br>
+            Seller: <strong>demo@smoovehub.com</strong> / <strong>Demo1234!</strong>
         </div>
     </form>
 </x-shared.modal>

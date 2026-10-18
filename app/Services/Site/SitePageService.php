@@ -160,6 +160,14 @@ class SitePageService
     /**
      * @return array<string, mixed>
      */
+    public function account(): array
+    {
+        return $this->repository->accountPage();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
     public function dashboard(): array
     {
         return $this->repository->dashboardPage();

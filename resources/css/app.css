@@ -217,6 +217,11 @@
         @apply items-center gap-1.5;
     }
 
+    #nav-guest.hidden,
+    #mobile-nav-guest.hidden {
+        display: none;
+    }
+
     .sh-nav-link {
         @apply shrink-0 cursor-pointer rounded-lg px-[9px] py-[7px] text-[13px] font-medium text-sh-s600 whitespace-nowrap transition-all duration-150 hover:bg-sh-blue-lt hover:text-sh-blue;
     }

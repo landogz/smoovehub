@@ -1,3 +1,4 @@
+import { initMemberAccount } from '../member/account.js';
 import { initAddProduct } from './add-product.js';
 import { initDashboard, removeProduct, saveSellerSettings } from './dashboard.js';
 import { initDolores } from './dolores.js';
@@ -33,6 +34,7 @@ export function initPrototype() {
     initPortals();
     initDistLoginButtons();
     initDashboard();
+    initMemberAccount();
     initShopPage();
     initFeaturedPurchaseCards();
     loadCatalog();

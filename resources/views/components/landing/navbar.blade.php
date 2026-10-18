@@ -111,7 +111,8 @@
                     </button>
 
                     <div id="nav-user-menu" class="absolute right-0 top-[calc(100%+8px)] z-[350] hidden min-w-[220px] overflow-hidden rounded-[14px] border border-sh-s200 bg-white shadow-[0_16px_48px_rgba(15,23,42,0.14)]">
-                        <a href="{{ route('site.dashboard') }}" class="block px-4 py-3 text-[13px] font-medium text-sh-s700 hover:bg-sh-s50">Seller Dashboard</a>
+                        <a id="nav-link-account" href="{{ route('site.account') }}" class="block px-4 py-3 text-[13px] font-medium text-sh-s700 hover:bg-sh-s50">My Account</a>
+                        <a id="nav-link-seller" href="{{ route('site.dashboard') }}" class="hidden px-4 py-3 text-[13px] font-medium text-sh-s700 hover:bg-sh-s50">Seller Dashboard</a>
                         <button type="button" class="block w-full px-4 py-3 text-left text-[13px] font-medium text-sh-s700 hover:bg-sh-s50" data-auth-logout-other-devices>
                             Sign out other devices
                         </button>
@@ -157,7 +158,8 @@
                 <button type="button" class="sh-btn sh-btn-sm sh-btn-blue flex-1" data-modal-open="signup-modal">Sign Up</button>
             </div>
             <div id="mobile-nav-user" class="hidden flex-col gap-2 p-4 lg:hidden">
-                <a href="{{ route('site.dashboard') }}" class="sh-btn sh-btn-sm sh-btn-outline w-full">Seller Dashboard</a>
+                <a id="nav-link-account-mobile" href="{{ route('site.account') }}" class="sh-btn sh-btn-sm sh-btn-outline w-full">My Account</a>
+                <a id="nav-link-seller-mobile" href="{{ route('site.dashboard') }}" class="hidden sh-btn sh-btn-sm sh-btn-outline w-full">Seller Dashboard</a>
                 <button type="button" class="sh-btn sh-btn-sm sh-btn-outline w-full" data-auth-logout-other-devices>Sign out other devices</button>
                 <button type="button" class="sh-btn sh-btn-sm sh-btn-outline w-full text-red-600" data-auth-logout>Sign out</button>
             </div>

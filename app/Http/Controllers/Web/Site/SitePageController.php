@@ -150,6 +150,14 @@ class SitePageController extends Controller
         ]);
     }
 
+    public function account(): View
+    {
+        return view('site.portals.member', [
+            'site' => $this->sitePageService->account(),
+            'activeNav' => null,
+        ]);
+    }
+
     public function dashboard(): View
     {
         return view('site.portals.dashboard', [

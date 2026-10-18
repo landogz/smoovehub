@@ -37,6 +37,8 @@ Route::controller(SitePageController::class)->group(function (): void {
     Route::get('/drive', 'drive')->name('site.drive');
     Route::get('/design-room', 'designRoom')->name('site.design-room');
     Route::get('/design-me', 'designMe')->name('site.design-me');
+    Route::get('/account', 'account')
+        ->name('site.account');
     Route::get('/dashboard', 'dashboard')
         ->middleware('role:seller')
         ->name('site.dashboard');

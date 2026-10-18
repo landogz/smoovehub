@@ -16,7 +16,7 @@ class ProjectProgressRepository
     {
         return [
             'title' => 'Project Progress',
-            'subtitle' => 'Roadmap and feature inventory aligned with the SmooveHub Docs prototype (Admin, Distribution, Member Dashboard, and public surfaces).',
+            'subtitle' => 'Roadmap and feature inventory aligned with the SmooveHub Docs prototype (Admin, Distribution, Seller Dashboard, Member Account, and public surfaces).',
             'client' => [
                 'name' => 'Competitive Relocation Service',
                 'project' => 'SmooveHub Platform Build',
@@ -50,8 +50,8 @@ class ProjectProgressRepository
                 ],
                 [
                     'id' => 4,
-                    'name' => 'Phase 4 — Member Dashboard',
-                    'summary' => 'Seller SPA APIs: Overview, Products, Orders, Payouts, Settings, Dist Catalog, Imports, Purchases, Onsite Appts, Open API.',
+                    'name' => 'Phase 4 — Seller Dashboard',
+                    'summary' => 'Seller SPA APIs: Overview, Products, Orders, Payouts, Settings, Dist Catalog, Imports, Purchases, Onsite Appts, Open API. Members (shoppers) use /account.',
                     'status' => 'in_progress',
                 ],
                 [
@@ -136,9 +136,22 @@ class ProjectProgressRepository
                     ],
                 ],
                 [
-                    'name' => 'Member Dashboard',
+                    'name' => 'Member Account',
+                    'path' => '/account',
+                    'audience' => 'Shoppers who order on the website',
+                    'ui_status' => 'live',
+                    'auth_status' => 'secured',
+                    'data_status' => 'live',
+                    'phase_api' => 2,
+                    'notes' => 'Sign Up creates a customer (member). My Account lists orders by buyer_id. Seller Dashboard is a separate store portal.',
+                    'modules' => [
+                        ['key' => 'orders', 'name' => 'My Orders', 'detail' => 'Shop purchases for the signed-in member', 'status' => 'production', 'phase' => 2],
+                    ],
+                ],
+                [
+                    'name' => 'Seller Dashboard',
                     'path' => '/dashboard',
-                    'audience' => 'Sellers / resellers / members',
+                    'audience' => 'Sellers / resellers / store owners',
                     'ui_status' => 'live',
                     'auth_status' => 'secured',
                     'data_status' => 'live',
@@ -161,6 +174,7 @@ class ProjectProgressRepository
             'surfaces' => [
                 ['name' => 'Home', 'path' => '/', 'detail' => 'Hero, categories, featured, CRS CTA, newsletter', 'status' => 'production', 'phase' => 2],
                 ['name' => 'The Shop', 'path' => '/shop', 'detail' => 'Catalog grid, filters, purchase modal; CRS delivery fee from Competitive Relocation service rates', 'status' => 'production', 'phase' => 2],
+                ['name' => 'Member Account', 'path' => '/account', 'detail' => 'Shopper orders for signed-in members (customers)', 'status' => 'production', 'phase' => 2],
                 ['name' => 'Sell / Onboarding', 'path' => '/sell', 'detail' => 'Seller signup CTA + wizard', 'status' => 'prototype', 'phase' => 4],
                 ['name' => 'Sellers Directory', 'path' => '/sellers', 'detail' => 'Reseller directory', 'status' => 'prototype', 'phase' => 4],
                 ['name' => 'Seller Storefront', 'path' => '/store/{slug}', 'detail' => 'Branded B2C store page', 'status' => 'prototype', 'phase' => 4],
@@ -182,7 +196,13 @@ class ProjectProgressRepository
             'history' => [
                 [
                     'date' => '2026-10-18',
-                    'title' => 'Member Dashboard live APIs',
+                    'title' => 'Member vs Seller split',
+                    'detail' => 'Members (website buyers) use /account. Seller Dashboard stays on /dashboard. Sign Up and navbar no longer send shoppers to the seller portal.',
+                    'status' => 'shipped',
+                ],
+                [
+                    'date' => '2026-10-18',
+                    'title' => 'Seller Dashboard live APIs',
                     'detail' => 'Seller /dashboard Overview, Products, Orders, Settings, and payout snapshot now read the database. Stripe Connect still Phase 3.',
                     'status' => 'shipped',
                 ],

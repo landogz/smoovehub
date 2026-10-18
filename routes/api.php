@@ -6,6 +6,7 @@ use App\Http\Controllers\API\Catalog\CatalogController;
 use App\Http\Controllers\API\Install\InstallController;
 use App\Http\Controllers\API\LandingPage\LandingPageController;
 use App\Http\Controllers\API\Order\PurchaseController;
+use App\Http\Controllers\API\Member\MemberAccountController;
 use App\Http\Controllers\API\Seller\SellerDashboardController;
 use App\Http\Controllers\API\Seller\SellerProductController;
 use App\Http\Controllers\API\Site\SiteFormController;
@@ -37,6 +38,10 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/register', [AuthController::class, 'register'])->name('api.auth.register');
         Route::post('/seller-register', [SellerRegistrationController::class, 'store'])
             ->name('api.auth.seller-register');
+    });
+
+    Route::prefix('member')->middleware(['auth:sanctum', 'throttle:api'])->group(function (): void {
+        Route::get('/account', [MemberAccountController::class, 'show'])->name('api.member.account');
     });
 
     Route::prefix('seller')->middleware(['auth:sanctum', 'role:seller', 'throttle:api'])->group(function (): void {

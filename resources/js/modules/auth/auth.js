@@ -114,7 +114,23 @@ function getRedirectPath(user) {
         return '/distribute';
     }
 
-    return null;
+    return '/account';
+}
+
+function userHasRole(user, role) {
+    const roles = Array.isArray(user?.roles) ? user.roles : [];
+
+    return user?.primary_role === role || roles.includes(role);
+}
+
+function displayRoleLabel(user) {
+    const role = user?.primary_role ?? 'customer';
+
+    if (role === 'customer') {
+        return 'Member';
+    }
+
+    return role.replace(/-/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function updateNavbar(user) {
@@ -129,6 +145,8 @@ function updateNavbar(user) {
     const isLoggedIn = Boolean(user);
 
     guest?.classList.toggle('hidden', isLoggedIn);
+    guest?.classList.toggle('lg:flex', !isLoggedIn);
+    guest?.classList.toggle('max-lg:hidden', !isLoggedIn);
     userNav?.classList.toggle('hidden', !isLoggedIn);
     userNav?.classList.toggle('flex', isLoggedIn);
 
@@ -145,9 +163,12 @@ function updateNavbar(user) {
     }
 
     if (user && role) {
-        const label = user.primary_role?.replace(/-/g, ' ') ?? 'customer';
-        role.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+        role.textContent = displayRoleLabel(user);
     }
+
+    const isSeller = userHasRole(user, 'seller');
+    document.getElementById('nav-link-seller')?.classList.toggle('hidden', !isSeller);
+    document.getElementById('nav-link-seller-mobile')?.classList.toggle('hidden', !isSeller);
 
     document.getElementById('nav-notifications')?.classList.toggle('hidden', !isLoggedIn);
 }

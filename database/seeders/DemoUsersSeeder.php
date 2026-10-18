@@ -20,6 +20,7 @@ class DemoUsersSeeder extends Seeder
         $this->seedAdmin();
         $this->seedDistributor();
         $this->seedSeller();
+        $this->seedMember();
     }
 
     private function seedSuperAdmin(): void
@@ -125,5 +126,20 @@ class DemoUsersSeeder extends Seeder
                 'member_since' => now(),
             ]
         );
+    }
+
+    private function seedMember(): void
+    {
+        $user = User::query()->firstOrCreate(
+            ['email' => 'member@smoovehub.com'],
+            [
+                'name' => 'Demo Member',
+                'password' => Hash::make('Member1234!'),
+                'status' => 'active',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $user->assignRole('customer');
     }
 }

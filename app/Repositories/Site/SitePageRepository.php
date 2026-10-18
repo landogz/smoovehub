@@ -699,6 +699,14 @@ class SitePageRepository
     /**
      * @return array<string, mixed>
      */
+    public function accountPage(): array
+    {
+        return $this->sharedLayout();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
     public function dashboardPage(): array
     {
         return [
