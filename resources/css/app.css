@@ -3625,3 +3625,63 @@ main,
 .sh-maint-message {
     @apply mt-4 text-sm text-white/70 sm:text-base;
 }
+
+/* ── Public 404 ─────────────────────────────────────────────────────── */
+
+.sh-error-body {
+    @apply flex min-h-screen flex-col bg-gradient-to-br from-sh-navy via-sh-blue to-sh-blue-mid text-white antialiased;
+}
+
+.sh-error-wrap {
+    @apply mx-auto w-full max-w-3xl px-5 sm:px-8;
+}
+
+.sh-error-topbar {
+    @apply border-b border-white/10 bg-sh-navy/40 backdrop-blur;
+}
+
+.sh-error-topbar-inner {
+    @apply flex items-center justify-between gap-4 py-4;
+}
+
+.sh-error-logo {
+    @apply h-8 w-auto brightness-0 invert sm:h-9;
+}
+
+.sh-error-pill {
+    @apply rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-bold tracking-wide text-white/80;
+}
+
+.sh-error-main {
+    @apply flex flex-1 items-center py-16 sm:py-24;
+}
+
+.sh-error-panel {
+    @apply text-center;
+}
+
+.sh-error-code {
+    font-family: var(--font-display);
+    @apply text-[clamp(88px,18vw,160px)] font-black leading-none tracking-tight text-sh-orange;
+}
+
+.sh-error-title {
+    font-family: var(--font-display);
+    @apply mt-4 text-[clamp(28px,4vw,42px)] font-extrabold leading-tight tracking-tight;
+}
+
+.sh-error-copy {
+    @apply mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-white/70;
+}
+
+.sh-error-actions {
+    @apply mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row;
+}
+
+.sh-error-links {
+    @apply mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[13px] font-semibold text-white/55;
+}
+
+.sh-error-links a {
+    @apply transition-colors hover:text-white;
+}

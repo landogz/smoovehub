@@ -199,8 +199,15 @@ class ProjectProgressRepository
                 ['name' => 'Markup Engine', 'path' => '(pricing)', 'detail' => 'B2B reseller + B2C backend markups (Docs Blueprint)', 'status' => 'production', 'phase' => 2],
                 ['name' => 'Payout Split Engine', 'path' => '(webhooks)', 'detail' => 'Seller + distributor + CRS fee on DELIVERED', 'status' => 'upcoming', 'phase' => 5],
                 ['name' => 'Under Maintenance', 'path' => '/maintenance', 'detail' => 'SITE_MAINTENANCE env toggle; marketplace 503. Client payment + progress stay open.', 'status' => 'production', 'phase' => 9],
+                ['name' => '404 Not Found', 'path' => '(unknown URLs)', 'detail' => 'Branded public error page with home, shop, quote, and contact links', 'status' => 'production', 'phase' => 9],
             ],
             'history' => [
+                [
+                    'date' => '2026-10-18',
+                    'title' => 'Branded 404 page',
+                    'detail' => 'Unknown URLs now show a SmooveHub 404 with paths back to home, shop, sellers, quote, and contact. API 404s stay JSON.',
+                    'status' => 'shipped',
+                ],
                 [
                     'date' => '2026-10-18',
                     'title' => 'Seller dashboard requires login',
