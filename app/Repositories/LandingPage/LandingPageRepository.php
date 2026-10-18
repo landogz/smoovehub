@@ -26,6 +26,12 @@ class LandingPageRepository
      */
     public function products(): array
     {
+        $fromDb = app(\App\Repositories\Catalog\CatalogRepository::class)->storefront();
+
+        if ($fromDb !== []) {
+            return $fromDb;
+        }
+
         return [
             ['id' => 1, 'name' => 'Japandi Solid Oak Dining Table', 'price' => 1249, 'original' => 1780, 'seller' => 'HomeStyle Co.', 'condition' => 'BRAND_NEW', 'icon' => '🪑', 'trending' => true, 'same_day' => false],
             ['id' => 2, 'name' => 'Industrial Steel Office Desk Set', 'price' => 849, 'original' => 1200, 'seller' => 'OfficeFirst', 'condition' => 'BRAND_NEW', 'icon' => '🖥️', 'trending' => false, 'same_day' => true],

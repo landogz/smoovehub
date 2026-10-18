@@ -11,6 +11,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SmooveHubDatabaseSeeder::class,
             DemoUsersSeeder::class,
+            CatalogProductSeeder::class,
         ]);
     }
 }

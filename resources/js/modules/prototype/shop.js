@@ -11,6 +11,7 @@ import {
 
 let catalogProducts = [];
 let currentPurchaseProduct = null;
+let currentCheckoutQuote = null;
 
 export function setCatalogProducts(products = []) {
     catalogProducts = products;
@@ -132,25 +133,37 @@ export function refreshShopGrid(conditionLabels = {}) {
     }
 }
 
-export function pmRecalc() {
+function applyQuoteToModal(quote) {
+    const dtype = document.getElementById('pm-dtype')?.value ?? 'CURBSIDE';
+
+    document.getElementById('pm-base-price').textContent = formatMoney(quote.listing_price);
+    document.getElementById('pm-markup-amt').textContent = quote.markup_display ?? 'Included';
+    document.getElementById('pm-proc-fee').textContent = formatMoney(quote.processing_fee);
+    document.getElementById('pm-del-fee').textContent = formatMoney(quote.delivery_fee);
+    document.getElementById('pm-del-pct').textContent = formatMoney(quote.delivery_coordination_fee);
+    document.getElementById('pm-total').textContent = formatMoney(quote.total);
+    document.getElementById('pm-inhome-row')?.classList.toggle('hidden', dtype !== 'IN_HOME');
+}
+
+export async function pmRecalc() {
     if (!currentPurchaseProduct) {
         return;
     }
 
-    const deliveryFee = 120;
-    const base = Number(currentPurchaseProduct.price);
-    const procFee = +(base * 0.03).toFixed(2);
-    const delPct = +(deliveryFee * 0.03).toFixed(2);
-    const total = base + deliveryFee + procFee + delPct;
-    const dtype = document.getElementById('pm-dtype')?.value ?? 'CURBSIDE';
+    try {
+        const response = await axios.post('/api/v1/orders/quote', {
+            product_id: currentPurchaseProduct.id,
+            delivery_type: document.getElementById('pm-dtype')?.value ?? 'CURBSIDE',
+        });
 
-    document.getElementById('pm-base-price').textContent = formatMoney(base);
-    document.getElementById('pm-markup-amt').textContent = 'Included';
-    document.getElementById('pm-proc-fee').textContent = formatMoney(procFee);
-    document.getElementById('pm-del-fee').textContent = formatMoney(deliveryFee);
-    document.getElementById('pm-del-pct').textContent = formatMoney(delPct);
-    document.getElementById('pm-total').textContent = formatMoney(total);
-    document.getElementById('pm-inhome-row')?.classList.toggle('hidden', dtype !== 'IN_HOME');
+        currentCheckoutQuote = response.data?.data?.quote ?? null;
+
+        if (currentCheckoutQuote) {
+            applyQuoteToModal(currentCheckoutQuote);
+        }
+    } catch {
+        showToast('Quote unavailable', 'Could not calculate checkout totals. Please try again.', 'error');
+    }
 }
 
 export function openPurchase(prodId) {
@@ -162,6 +175,7 @@ export function openPurchase(prodId) {
     }
 
     currentPurchaseProduct = product;
+    currentCheckoutQuote = null;
 
     document.getElementById('pm-product-info').innerHTML = `
         <div class="flex items-center gap-3">
@@ -189,29 +203,39 @@ export async function completePurchase() {
     }
 
     const product = currentPurchaseProduct;
-    const totalText = document.getElementById('pm-total')?.textContent?.replace(/[$,]/g, '') ?? product.price;
+    const submit = document.querySelector('[data-purchase-submit]');
+
+    if (submit) {
+        submit.disabled = true;
+    }
 
     try {
         const response = await axios.post('/api/v1/orders/purchase', {
             product_id: product.id,
-            product_name: product.name,
-            seller_name: product.seller,
-            price: product.price,
             delivery_address: addr,
             delivery_zip: zip,
             delivery_type: dtype,
-            total: parseFloat(totalText),
         });
 
-        const orderNum = response.data?.data?.order?.order_number ?? `SH-${Math.floor(1000 + Math.random() * 9000)}`;
-        finalizePurchase(orderNum, product, addr);
-    } catch {
-        const orderNum = `SH-${Math.floor(1000 + Math.random() * 9000)}`;
-        finalizePurchase(orderNum, product, addr);
+        const order = response.data?.data?.order;
+        const orderNum = order?.order_number;
+
+        if (!orderNum) {
+            throw new Error('Missing order number');
+        }
+
+        finalizePurchase(orderNum, product, addr, order?.total ?? product.price);
+    } catch (error) {
+        const message = error.response?.data?.message ?? 'The order could not be placed. Please try again.';
+        showToast('Order not placed', message, 'error');
+    } finally {
+        if (submit) {
+            submit.disabled = false;
+        }
     }
 }
 
-function finalizePurchase(orderNum, product, addr) {
+function finalizePurchase(orderNum, product, addr, amount) {
     const state = loadState();
 
     state.orders.push({
@@ -220,7 +244,7 @@ function finalizePurchase(orderNum, product, addr) {
         product: product.name,
         productId: product.id,
         seller: product.seller,
-        amount: product.price,
+        amount,
         status: 'Confirmed',
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
         addr,
@@ -232,13 +256,13 @@ function finalizePurchase(orderNum, product, addr) {
     closeModal('purchase-modal');
     updateCartBadge(state.cartCount);
 
-    showToast('Payment Confirmed! 🎉', `Order ${orderNum} placed. You'll receive an email confirmation.`, 'success');
+    showToast('Order placed', `Order ${orderNum} saved. Stripe payment confirmation ships in Phase 3.`, 'success');
 
     pushNotification({
         type: 'new_order',
         icon: '🛒',
         title: `New order: ${orderNum}`,
-        msg: `${product.name} sold for ${formatMoney(product.price)}. Customer address: ${addr}`,
+        msg: `${product.name} sold for ${formatMoney(amount)}. Customer address: ${addr}`,
     });
 
     window.dispatchEvent(new CustomEvent('smoovehub:notifications-updated'));

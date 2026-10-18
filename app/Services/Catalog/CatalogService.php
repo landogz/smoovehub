@@ -16,8 +16,16 @@ class CatalogService
     public function catalog(): array
     {
         return [
-            'products' => $this->repository->products(),
+            'products' => $this->repository->storefront(),
             'condition_labels' => $this->repository->conditionLabels(),
         ];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function storefrontProducts(): array
+    {
+        return $this->repository->storefront();
     }
 }

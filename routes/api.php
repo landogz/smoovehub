@@ -26,7 +26,10 @@ Route::prefix('v1')->group(function (): void {
     Route::post('/site/quote-estimate', [SiteFormController::class, 'quoteEstimate'])->name('api.site.quote');
     Route::post('/site/design-me-order', [SiteFormController::class, 'designMeOrder'])->name('api.site.design-me');
 
-    Route::post('/orders/purchase', [PurchaseController::class, 'store'])->name('api.orders.purchase');
+    Route::middleware('throttle:api')->group(function (): void {
+        Route::post('/orders/quote', [PurchaseController::class, 'quote'])->name('api.orders.quote');
+        Route::post('/orders/purchase', [PurchaseController::class, 'store'])->name('api.orders.purchase');
+    });
 
     Route::prefix('auth')->middleware('throttle:auth')->group(function (): void {
         Route::post('/login', [AuthController::class, 'login'])->name('api.auth.login');

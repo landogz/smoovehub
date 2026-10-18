@@ -38,7 +38,7 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique();
             $table->string('order_number')->unique();
-            $table->foreignId('buyer_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('buyer_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('seller_profile_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('distribution_company_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('delivery_quote_id')->nullable()->constrained()->nullOnDelete();

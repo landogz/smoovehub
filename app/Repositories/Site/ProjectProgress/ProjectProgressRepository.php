@@ -40,7 +40,7 @@ class ProjectProgressRepository
                     'id' => 2,
                     'name' => 'Phase 2 — Catalog & Orders',
                     'summary' => 'DB shop catalog, markup engine (B2B/B2C), trusted purchase with order items — Docs: The Shop + purchase flow.',
-                    'status' => 'upcoming',
+                    'status' => 'done',
                 ],
                 [
                     'id' => 3,
@@ -159,8 +159,8 @@ class ProjectProgressRepository
                 ],
             ],
             'surfaces' => [
-                ['name' => 'Home', 'path' => '/', 'detail' => 'Hero, categories, featured, CRS CTA, newsletter', 'status' => 'prototype', 'phase' => 2],
-                ['name' => 'The Shop', 'path' => '/shop', 'detail' => 'Catalog grid, filters, purchase modal', 'status' => 'prototype', 'phase' => 2],
+                ['name' => 'Home', 'path' => '/', 'detail' => 'Hero, categories, featured, CRS CTA, newsletter', 'status' => 'production', 'phase' => 2],
+                ['name' => 'The Shop', 'path' => '/shop', 'detail' => 'Catalog grid, filters, purchase modal', 'status' => 'production', 'phase' => 2],
                 ['name' => 'Sell / Onboarding', 'path' => '/sell', 'detail' => 'Seller signup CTA + wizard', 'status' => 'prototype', 'phase' => 4],
                 ['name' => 'Sellers Directory', 'path' => '/sellers', 'detail' => 'Reseller directory', 'status' => 'prototype', 'phase' => 4],
                 ['name' => 'Seller Storefront', 'path' => '/store/{slug}', 'detail' => 'Branded B2C store page', 'status' => 'prototype', 'phase' => 4],
@@ -175,11 +175,17 @@ class ProjectProgressRepository
                 ['name' => 'Stripe Checkout', 'path' => '(purchase modal)', 'detail' => 'Fee breakdown + PaymentIntent/Connect', 'status' => 'upcoming', 'phase' => 3],
                 ['name' => 'GoShare + CRS Webhooks', 'path' => '/api/v1/…', 'detail' => 'Job create + delivery webhook → payouts', 'status' => 'upcoming', 'phase' => 7],
                 ['name' => 'Ms. Dolores AI', 'path' => '(widget)', 'detail' => 'Chat assistant; server-proxied Anthropic', 'status' => 'prototype', 'phase' => 8],
-                ['name' => 'Markup Engine', 'path' => '(pricing)', 'detail' => 'B2B reseller + B2C backend markups (Docs Blueprint)', 'status' => 'upcoming', 'phase' => 2],
+                ['name' => 'Markup Engine', 'path' => '(pricing)', 'detail' => 'B2B reseller + B2C backend markups (Docs Blueprint)', 'status' => 'production', 'phase' => 2],
                 ['name' => 'Payout Split Engine', 'path' => '(webhooks)', 'detail' => 'Seller + distributor + CRS fee on DELIVERED', 'status' => 'upcoming', 'phase' => 5],
                 ['name' => 'Under Maintenance', 'path' => '/maintenance', 'detail' => 'SITE_MAINTENANCE env toggle; marketplace 503. Client payment + progress stay open.', 'status' => 'production', 'phase' => 9],
             ],
             'history' => [
+                [
+                    'date' => '2026-10-18',
+                    'title' => 'Phase 2 — Catalog & Orders',
+                    'detail' => 'Shop catalog is DB-backed with markup engine. Trusted checkout creates order + items (unpaid until Stripe Phase 3).',
+                    'status' => 'shipped',
+                ],
                 [
                     'date' => '2026-10-18',
                     'title' => 'Partial payment received',

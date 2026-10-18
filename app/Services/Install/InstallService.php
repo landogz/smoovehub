@@ -3,6 +3,7 @@
 namespace App\Services\Install;
 
 use App\Repositories\Install\InstallRepository;
+use Database\Seeders\CatalogProductSeeder;
 use Database\Seeders\DemoUsersSeeder;
 use Database\Seeders\SmooveHubDatabaseSeeder;
 use Illuminate\Support\Facades\Artisan;
@@ -164,6 +165,11 @@ class InstallService
 
         Artisan::call('db:seed', [
             '--class' => DemoUsersSeeder::class,
+            '--force' => true,
+        ]);
+
+        Artisan::call('db:seed', [
+            '--class' => CatalogProductSeeder::class,
             '--force' => true,
         ]);
     }

@@ -791,6 +791,16 @@ class SitePageRepository
      */
     public function products(): array
     {
+        $fromDb = app(\App\Repositories\Catalog\CatalogRepository::class)->storefront();
+
+        return $fromDb !== [] ? $fromDb : $this->fallbackProducts();
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function fallbackProducts(): array
+    {
         return [
             ['id' => 1, 'name' => 'Japandi Solid Oak Dining Table', 'price' => 1249, 'original' => 1780, 'seller' => 'HomeStyle Co.', 'condition' => 'BRAND_NEW', 'category' => 'RESIDENTIAL', 'icon' => '🪑', 'trending' => true, 'same_day' => false],
             ['id' => 2, 'name' => 'Industrial Steel Office Desk Set', 'price' => 849, 'original' => 1200, 'seller' => 'OfficeFirst', 'condition' => 'BRAND_NEW', 'category' => 'COMMERCIAL', 'icon' => '🖥️', 'trending' => false, 'same_day' => true],

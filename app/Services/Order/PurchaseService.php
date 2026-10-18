@@ -3,14 +3,36 @@
 namespace App\Services\Order;
 
 use App\Models\User;
+use App\Repositories\Catalog\CatalogRepository;
 use App\Repositories\Order\PurchaseRepository;
+use App\Services\Audit\ActivityLogger;
+use App\Services\Platform\MarkupCalculationService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class PurchaseService
 {
     public function __construct(
-        private readonly PurchaseRepository $repository,
+        private readonly CatalogRepository $catalogRepository,
+        private readonly PurchaseRepository $purchaseRepository,
+        private readonly MarkupCalculationService $markup,
+        private readonly ActivityLogger $activityLogger,
     ) {}
+
+    /**
+     * @param  array<string, mixed>  $payload
+     * @return array<string, mixed>
+     */
+    public function quote(array $payload): array
+    {
+        $product = $this->requireProduct((string) $payload['product_id']);
+        $quote = $this->markup->checkoutQuote((float) $product->listing_price);
+
+        return [
+            'product' => $this->catalogRepository->toStorefrontCard($product),
+            'quote' => $quote,
+        ];
+    }
 
     /**
      * @param  array<string, mixed>  $payload
@@ -18,20 +40,44 @@ class PurchaseService
      */
     public function complete(?User $buyer, array $payload, Request $request): array
     {
-        $deliveryFee = 120.0;
-        $processingFee = round(((float) $payload['price']) * 0.03, 2);
-        $deliveryPct = round($deliveryFee * 0.03, 2);
+        $product = $this->requireProduct((string) $payload['product_id']);
+        $quote = $this->markup->checkoutQuote((float) $product->listing_price);
 
-        $computedTotal = (float) $payload['price'] + $deliveryFee + $processingFee + $deliveryPct;
-
-        $order = $this->repository->createPurchase($buyer, [
-            ...$payload,
-            'delivery_fee' => $deliveryFee,
-            'processing_fee' => $processingFee,
-            'platform_fee' => $deliveryPct,
-            'total' => $payload['total'] ?? $computedTotal,
+        $order = $this->purchaseRepository->createTrustedOrder($buyer, $product, $quote, [
+            'delivery_address' => $payload['delivery_address'],
+            'delivery_zip' => $payload['delivery_zip'],
+            'delivery_type' => $payload['delivery_type'] ?? 'CURBSIDE',
         ]);
 
-        return $order;
+        $this->activityLogger->log(
+            $buyer,
+            'order.placed',
+            'order',
+            null,
+            [
+                'order_number' => $order['order_number'],
+                'product_uuid' => $product->uuid,
+                'total' => $order['total'],
+            ],
+            $request,
+        );
+
+        return [
+            'order' => $order,
+            'quote' => $quote,
+        ];
+    }
+
+    private function requireProduct(string $uuid)
+    {
+        $product = $this->catalogRepository->findActiveByUuid($uuid);
+
+        if (! $product) {
+            throw ValidationException::withMessages([
+                'product_id' => ['Product is not available.'],
+            ]);
+        }
+
+        return $product;
     }
 }

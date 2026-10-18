@@ -17,14 +17,10 @@ class PurchaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_id' => ['required'],
-            'product_name' => ['required', 'string', 'max:255'],
-            'seller_name' => ['required', 'string', 'max:255'],
-            'price' => ['required', 'numeric', 'min:0'],
+            'product_id' => ['required', 'uuid'],
             'delivery_address' => ['required', 'string', 'max:500'],
-            'delivery_zip' => ['required', 'string', 'max:10'],
+            'delivery_zip' => ['required', 'digits:5'],
             'delivery_type' => ['nullable', 'in:CURBSIDE,IN_HOME'],
-            'total' => ['required', 'numeric', 'min:0'],
         ];
     }
 }
