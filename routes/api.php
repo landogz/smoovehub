@@ -6,6 +6,7 @@ use App\Http\Controllers\API\Catalog\CatalogController;
 use App\Http\Controllers\API\Install\InstallController;
 use App\Http\Controllers\API\LandingPage\LandingPageController;
 use App\Http\Controllers\API\Order\PurchaseController;
+use App\Http\Controllers\API\Seller\SellerDashboardController;
 use App\Http\Controllers\API\Seller\SellerProductController;
 use App\Http\Controllers\API\Site\SiteFormController;
 use Illuminate\Support\Facades\Route;
@@ -38,8 +39,20 @@ Route::prefix('v1')->group(function (): void {
             ->name('api.auth.seller-register');
     });
 
-    Route::prefix('seller')->middleware(['auth:sanctum', 'throttle:api'])->group(function (): void {
+    Route::prefix('seller')->middleware(['auth:sanctum', 'role:seller', 'throttle:api'])->group(function (): void {
+        Route::get('/dashboard', [SellerDashboardController::class, 'overview'])->name('api.seller.dashboard');
+        Route::get('/orders', [SellerDashboardController::class, 'orders'])->name('api.seller.orders');
+        Route::get('/payouts', [SellerDashboardController::class, 'payouts'])->name('api.seller.payouts');
+        Route::get('/settings', [SellerDashboardController::class, 'settings'])->name('api.seller.settings.show');
+        Route::put('/settings', [SellerDashboardController::class, 'updateSettings'])->name('api.seller.settings.update');
+        Route::get('/dist-catalog', [SellerDashboardController::class, 'distCatalog'])->name('api.seller.dist-catalog');
+        Route::get('/imports', [SellerDashboardController::class, 'imports'])->name('api.seller.imports');
+        Route::get('/purchases', [SellerDashboardController::class, 'purchases'])->name('api.seller.purchases');
+        Route::get('/onsite-appointments', [SellerDashboardController::class, 'onsiteAppointments'])->name('api.seller.onsite');
+        Route::get('/open-api', [SellerDashboardController::class, 'openApi'])->name('api.seller.open-api');
+        Route::get('/products', [SellerProductController::class, 'index'])->name('api.seller.products.index');
         Route::post('/products', [SellerProductController::class, 'store'])->name('api.seller.products.store');
+        Route::delete('/products/{uuid}', [SellerProductController::class, 'destroy'])->name('api.seller.products.destroy');
     });
 
     Route::prefix('auth')->middleware(['auth:sanctum', 'throttle:api'])->group(function (): void {

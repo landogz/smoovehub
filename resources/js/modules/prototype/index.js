@@ -1,5 +1,5 @@
-import { initAddProduct, removeProduct, saveSellerSettings } from './add-product.js';
-import { initDashboard } from './dashboard.js';
+import { initAddProduct } from './add-product.js';
+import { initDashboard, removeProduct, saveSellerSettings } from './dashboard.js';
 import { initDolores } from './dolores.js';
 import { initNotifications } from './notifications.js';
 import { initPortals, initDistLoginButtons } from './portals.js';

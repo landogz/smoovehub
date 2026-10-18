@@ -62,12 +62,22 @@
             <main class="flex-1 p-5 md:p-8">
                 <div id="dash-overview" class="sh-dash-panel sh-dash-panel-active">
                     <div class="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-                        @foreach ($portal['stats'] as $stat)
-                            <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-5">
-                                <div class="text-xs font-semibold uppercase tracking-widest text-sh-s400">{{ $stat['label'] }}</div>
-                                <div class="sh-display mt-2 text-2xl font-black text-sh-s900 md:text-3xl">{{ $stat['value'] }}</div>
-                            </div>
-                        @endforeach
+                        <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-5">
+                            <div class="text-xs font-semibold uppercase tracking-widest text-sh-s400">Revenue (30d)</div>
+                            <div id="dash-stat-revenue" class="sh-display mt-2 text-2xl font-black text-sh-s900 md:text-3xl">$0</div>
+                        </div>
+                        <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-5">
+                            <div class="text-xs font-semibold uppercase tracking-widest text-sh-s400">Orders</div>
+                            <div id="dash-stat-orders" class="sh-display mt-2 text-2xl font-black text-sh-s900 md:text-3xl">0</div>
+                        </div>
+                        <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-5">
+                            <div class="text-xs font-semibold uppercase tracking-widest text-sh-s400">Products</div>
+                            <div id="dash-stat-products" class="sh-display mt-2 text-2xl font-black text-sh-s900 md:text-3xl">0</div>
+                        </div>
+                        <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-5">
+                            <div class="text-xs font-semibold uppercase tracking-widest text-sh-s400">Rating</div>
+                            <div id="dash-stat-rating" class="sh-display mt-2 text-2xl font-black text-sh-s900 md:text-3xl">—</div>
+                        </div>
                     </div>
                     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                         <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-6">
@@ -121,13 +131,13 @@
                 <div id="dash-payouts" class="sh-dash-panel hidden">
                     <h2 class="mb-4 text-lg font-bold text-sh-s900">Payouts</h2>
                     <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-6">
-                        <p class="mb-4 text-[13px] text-sh-s500">Stripe Connect payouts — 100% of your listed price, deposited on delivery confirmation.</p>
+                        <p id="dash-payout-note" class="mb-4 text-[13px] text-sh-s500">Stripe Connect payouts — 100% of your listed price, deposited on delivery confirmation.</p>
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                            <div class="rounded-xl bg-sh-green-bg p-4"><div class="text-xs text-sh-s500">Available</div><div class="text-2xl font-black text-sh-green">$3,240</div></div>
-                            <div class="rounded-xl bg-sh-s50 p-4"><div class="text-xs text-sh-s500">Pending</div><div class="text-2xl font-black text-sh-s900">$890</div></div>
-                            <div class="rounded-xl bg-sh-s50 p-4"><div class="text-xs text-sh-s500">Total paid</div><div class="text-2xl font-black text-sh-s900">$12,480</div></div>
+                            <div class="rounded-xl bg-sh-green-bg p-4"><div class="text-xs text-sh-s500">Available</div><div id="dash-payout-available" class="text-2xl font-black text-sh-green">$0</div></div>
+                            <div class="rounded-xl bg-sh-s50 p-4"><div class="text-xs text-sh-s500">Pending</div><div id="dash-payout-pending" class="text-2xl font-black text-sh-s900">$0</div></div>
+                            <div class="rounded-xl bg-sh-s50 p-4"><div class="text-xs text-sh-s500">Total paid</div><div id="dash-payout-paid" class="text-2xl font-black text-sh-s900">$0</div></div>
                         </div>
-                        <button type="button" class="sh-btn sh-btn-orange mt-6">Request Payout →</button>
+                        <button type="button" class="sh-btn sh-btn-orange mt-6" disabled>Request Payout →</button>
                     </div>
                 </div>
 
@@ -160,16 +170,8 @@
                                     <th class="px-4 py-3"></th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @foreach ($portal['dist_catalog'] as $item)
-                                    <tr class="border-b border-sh-s100 last:border-0">
-                                        <td class="px-4 py-3 font-mono text-xs">{{ $item['sku'] }}</td>
-                                        <td class="px-4 py-3 font-medium">{{ $item['name'] }}</td>
-                                        <td class="px-4 py-3">${{ number_format($item['wholesale']) }}</td>
-                                        <td class="px-4 py-3">{{ $item['qty'] }}</td>
-                                        <td class="px-4 py-3"><button type="button" class="sh-btn sh-btn-sm sh-btn-outline">Import</button></td>
-                                    </tr>
-                                @endforeach
+                            <tbody id="dash-dist-catalog-body">
+                                <tr><td colspan="5" class="px-4 py-8 text-center text-[13px] text-sh-s400">Loading wholesale inventory…</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -177,24 +179,24 @@
 
                 <div id="dash-myimports" class="sh-dash-panel hidden">
                     <h2 class="mb-4 text-lg font-bold text-sh-s900">My Import Orders</h2>
-                    <p class="rounded-2xl border border-sh-s200 bg-white p-8 text-center text-[13px] text-sh-s500">No import orders yet. Browse the Distribution Catalog to import wholesale inventory.</p>
+                    <p id="dash-imports-list" class="rounded-2xl border border-sh-s200 bg-white p-8 text-center text-[13px] text-sh-s500">No import orders yet. Browse the Distribution Catalog to import wholesale inventory.</p>
                 </div>
 
                 <div id="dash-mypurchases" class="sh-dash-panel hidden">
                     <h2 class="mb-4 text-lg font-bold text-sh-s900">My Dist. Purchases</h2>
-                    <p class="rounded-2xl border border-sh-s200 bg-white p-8 text-center text-[13px] text-sh-s500">Track your distribution catalog purchases here.</p>
+                    <p id="dash-purchases-list" class="rounded-2xl border border-sh-s200 bg-white p-8 text-center text-[13px] text-sh-s500">Track your distribution catalog purchases here.</p>
                 </div>
 
                 <div id="dash-onsiteappts" class="sh-dash-panel hidden">
                     <h2 class="mb-4 text-lg font-bold text-sh-s900">Onsite Visit Appointments</h2>
-                    <p class="rounded-2xl border border-sh-s200 bg-white p-8 text-center text-[13px] text-sh-s500">Customer onsite visit requests will appear here when buyers book showroom appointments.</p>
+                    <p id="dash-onsite-list" class="rounded-2xl border border-sh-s200 bg-white p-8 text-center text-[13px] text-sh-s500">Customer onsite visit requests will appear here when buyers book showroom appointments.</p>
                 </div>
 
                 <div id="dash-openapi" class="sh-dash-panel hidden">
                     <h2 class="mb-4 text-lg font-bold text-sh-s900">Open API</h2>
                     <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-6">
                         <p class="mb-4 text-[13px] text-sh-s500">Connect your ERP or inventory system via SmooveHub Open API.</p>
-                        <div class="rounded-xl bg-sh-s50 p-4 font-mono text-xs text-sh-s700">API Key: sh_live_••••••••••••••••</div>
+                        <div id="dash-openapi-status" class="rounded-xl bg-sh-s50 p-4 font-mono text-xs text-sh-s700">API Key: sh_live_••••••••••••••••</div>
                         <button type="button" class="sh-btn sh-btn-outline mt-4">Regenerate Key</button>
                     </div>
                 </div>

@@ -705,7 +705,7 @@ class SitePageRepository
             'nav' => [
                 ['key' => 'overview', 'label' => 'Overview'],
                 ['key' => 'products', 'label' => 'My Products'],
-                ['key' => 'orders', 'label' => 'Orders', 'badge' => 3],
+                ['key' => 'orders', 'label' => 'Orders'],
                 ['key' => 'payouts', 'label' => 'Payouts'],
                 ['key' => 'settings', 'label' => 'Settings'],
                 ['key' => 'distcatalog', 'label' => 'Dist. Catalog', 'badge' => 'NEW', 'accent' => true],
