@@ -50,6 +50,7 @@ class PurchaseRepository
                     'delivery_zip' => $delivery['delivery_zip'],
                     'delivery_type' => $delivery['delivery_type'],
                     'trusted_checkout' => true,
+                    'crs' => $quote['crs'] ?? null,
                 ]),
             ]);
 

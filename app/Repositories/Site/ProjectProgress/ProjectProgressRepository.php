@@ -70,7 +70,7 @@ class ProjectProgressRepository
                     'id' => 7,
                     'name' => 'Phase 7 — Delivery & Design',
                     'summary' => 'CRS quotes, GoShare webhooks, QR/tracking/waybills, driver onboarding, Design Room + Design Me APIs.',
-                    'status' => 'upcoming',
+                    'status' => 'in_progress',
                 ],
                 [
                     'id' => 8,
@@ -160,7 +160,7 @@ class ProjectProgressRepository
             ],
             'surfaces' => [
                 ['name' => 'Home', 'path' => '/', 'detail' => 'Hero, categories, featured, CRS CTA, newsletter', 'status' => 'production', 'phase' => 2],
-                ['name' => 'The Shop', 'path' => '/shop', 'detail' => 'Catalog grid, filters, purchase modal', 'status' => 'production', 'phase' => 2],
+                ['name' => 'The Shop', 'path' => '/shop', 'detail' => 'Catalog grid, filters, purchase modal; CRS delivery fee from Competitive Relocation service rates', 'status' => 'production', 'phase' => 2],
                 ['name' => 'Sell / Onboarding', 'path' => '/sell', 'detail' => 'Seller signup CTA + wizard', 'status' => 'prototype', 'phase' => 4],
                 ['name' => 'Sellers Directory', 'path' => '/sellers', 'detail' => 'Reseller directory', 'status' => 'prototype', 'phase' => 4],
                 ['name' => 'Seller Storefront', 'path' => '/store/{slug}', 'detail' => 'Branded B2C store page', 'status' => 'prototype', 'phase' => 4],
@@ -180,6 +180,12 @@ class ProjectProgressRepository
                 ['name' => 'Under Maintenance', 'path' => '/maintenance', 'detail' => 'SITE_MAINTENANCE env toggle; marketplace 503. Client payment + progress stay open.', 'status' => 'production', 'phase' => 9],
             ],
             'history' => [
+                [
+                    'date' => '2026-10-18',
+                    'title' => 'Shop delivery fee uses CRS rates',
+                    'detail' => 'Checkout CRS delivery fee is calculated from Competitive Relocation service_rates (item-value brackets + mileage), not a flat $120.',
+                    'status' => 'shipped',
+                ],
                 [
                     'date' => '2026-10-18',
                     'title' => 'Phase 2 — Catalog & Orders',

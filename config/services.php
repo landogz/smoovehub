@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'crs' => [
+        'url' => env('CRS_API_URL', 'https://competitiverelocationcrm.com'),
+        'token' => env('CRS_API_TOKEN'),
+        'timeout' => (int) env('CRS_API_TIMEOUT', 3),
+        'cache_seconds' => (int) env('CRS_RATES_CACHE', 3600),
+    ],
+
 ];

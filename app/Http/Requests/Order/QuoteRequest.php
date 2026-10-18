@@ -18,6 +18,7 @@ class QuoteRequest extends FormRequest
     {
         return [
             'product_id' => ['required', 'uuid'],
+            'delivery_zip' => ['nullable', 'digits:5'],
             'delivery_type' => ['nullable', 'in:CURBSIDE,IN_HOME'],
         ];
     }

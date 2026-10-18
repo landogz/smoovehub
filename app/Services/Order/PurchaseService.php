@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Repositories\Catalog\CatalogRepository;
 use App\Repositories\Order\PurchaseRepository;
 use App\Services\Audit\ActivityLogger;
+use App\Services\Delivery\CrsDeliveryQuoteService;
 use App\Services\Platform\MarkupCalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -16,6 +17,7 @@ class PurchaseService
         private readonly CatalogRepository $catalogRepository,
         private readonly PurchaseRepository $purchaseRepository,
         private readonly MarkupCalculationService $markup,
+        private readonly CrsDeliveryQuoteService $crsDelivery,
         private readonly ActivityLogger $activityLogger,
     ) {}
 
@@ -26,7 +28,7 @@ class PurchaseService
     public function quote(array $payload): array
     {
         $product = $this->requireProduct((string) $payload['product_id']);
-        $quote = $this->markup->checkoutQuote((float) $product->listing_price);
+        $quote = $this->checkoutQuote($product);
 
         return [
             'product' => $this->catalogRepository->toStorefrontCard($product),
@@ -41,7 +43,7 @@ class PurchaseService
     public function complete(?User $buyer, array $payload, Request $request): array
     {
         $product = $this->requireProduct((string) $payload['product_id']);
-        $quote = $this->markup->checkoutQuote((float) $product->listing_price);
+        $quote = $this->checkoutQuote($product);
 
         $order = $this->purchaseRepository->createTrustedOrder($buyer, $product, $quote, [
             'delivery_address' => $payload['delivery_address'],
@@ -79,5 +81,21 @@ class PurchaseService
         }
 
         return $product;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function checkoutQuote($product): array
+    {
+        $crs = $this->crsDelivery->quote((float) $product->listing_price);
+        $quote = $this->markup->checkoutQuote((float) $product->listing_price, (float) $crs['delivery_fee']);
+        $quote['crs'] = [
+            'value_range' => $crs['value_range'],
+            'base_rate' => $crs['base_rate'],
+            'source' => $crs['source'],
+        ];
+
+        return $quote;
     }
 }
