@@ -2,7 +2,9 @@
 
 namespace App\Services\Order;
 
+use App\Models\Order\Order;
 use App\Models\User;
+use App\Notifications\MemberOrderPlaced;
 use App\Repositories\Catalog\CatalogRepository;
 use App\Repositories\Order\PurchaseRepository;
 use App\Services\Audit\ActivityLogger;
@@ -63,6 +65,14 @@ class PurchaseService
             ],
             $request,
         );
+
+        if ($buyer) {
+            $orderModel = Order::query()->where('order_number', $order['order_number'])->first();
+
+            if ($orderModel) {
+                $buyer->notify(new MemberOrderPlaced($orderModel));
+            }
+        }
 
         return [
             'order' => $order,

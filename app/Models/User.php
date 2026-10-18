@@ -8,6 +8,9 @@ use App\Models\Design\CustomFurnitureDesign;
 use App\Models\Design\DesignRoom;
 use App\Models\Distribution\DistributionCompany;
 use App\Models\Distribution\DistributionCompanyUser;
+use App\Models\Member\MemberAddress;
+use App\Models\Member\MemberPaymentMethod;
+use App\Models\Member\MemberVoucher;
 use App\Models\Order\DeliveryQuote;
 use App\Models\Order\Order;
 use App\Models\Seller\SellerProfile;
@@ -23,7 +26,20 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['uuid', 'name', 'email', 'phone', 'password', 'status', 'last_login_at', 'avatar_path'])]
+#[Fillable([
+    'uuid',
+    'name',
+    'username',
+    'email',
+    'phone',
+    'gender',
+    'date_of_birth',
+    'password',
+    'status',
+    'last_login_at',
+    'avatar_path',
+    'member_settings',
+])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -38,6 +54,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
+            'date_of_birth' => 'date',
+            'member_settings' => 'array',
             'password' => 'hashed',
         ];
     }
@@ -70,6 +88,21 @@ class User extends Authenticatable
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'buyer_id');
+    }
+
+    public function memberAddresses(): HasMany
+    {
+        return $this->hasMany(MemberAddress::class);
+    }
+
+    public function memberPaymentMethods(): HasMany
+    {
+        return $this->hasMany(MemberPaymentMethod::class);
+    }
+
+    public function memberVouchers(): HasMany
+    {
+        return $this->hasMany(MemberVoucher::class);
     }
 
     public function deliveryQuotes(): HasMany

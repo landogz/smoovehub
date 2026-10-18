@@ -7,6 +7,11 @@ use App\Http\Controllers\API\Install\InstallController;
 use App\Http\Controllers\API\LandingPage\LandingPageController;
 use App\Http\Controllers\API\Order\PurchaseController;
 use App\Http\Controllers\API\Member\MemberAccountController;
+use App\Http\Controllers\API\Member\MemberAddressController;
+use App\Http\Controllers\API\Member\MemberNotificationController;
+use App\Http\Controllers\API\Member\MemberOrderController;
+use App\Http\Controllers\API\Member\MemberPaymentMethodController;
+use App\Http\Controllers\API\Member\MemberVoucherController;
 use App\Http\Controllers\API\Seller\SellerDashboardController;
 use App\Http\Controllers\API\Seller\SellerProductController;
 use App\Http\Controllers\API\Site\SiteFormController;
@@ -42,6 +47,30 @@ Route::prefix('v1')->group(function (): void {
 
     Route::prefix('member')->middleware(['auth:sanctum', 'throttle:api'])->group(function (): void {
         Route::get('/account', [MemberAccountController::class, 'show'])->name('api.member.account');
+        Route::put('/profile', [MemberAccountController::class, 'updateProfile'])->name('api.member.profile');
+        Route::post('/avatar', [MemberAccountController::class, 'storeAvatar'])->name('api.member.avatar');
+        Route::put('/password', [MemberAccountController::class, 'updatePassword'])->name('api.member.password');
+        Route::put('/settings', [MemberAccountController::class, 'updateSettings'])->name('api.member.settings');
+
+        Route::get('/addresses', [MemberAddressController::class, 'index'])->name('api.member.addresses.index');
+        Route::post('/addresses', [MemberAddressController::class, 'store'])->name('api.member.addresses.store');
+        Route::put('/addresses/{uuid}', [MemberAddressController::class, 'update'])->name('api.member.addresses.update');
+        Route::delete('/addresses/{uuid}', [MemberAddressController::class, 'destroy'])->name('api.member.addresses.destroy');
+        Route::post('/addresses/{uuid}/default', [MemberAddressController::class, 'setDefault'])->name('api.member.addresses.default');
+
+        Route::get('/payment-methods', [MemberPaymentMethodController::class, 'index'])->name('api.member.payments.index');
+        Route::post('/payment-methods', [MemberPaymentMethodController::class, 'store'])->name('api.member.payments.store');
+        Route::delete('/payment-methods/{uuid}', [MemberPaymentMethodController::class, 'destroy'])->name('api.member.payments.destroy');
+        Route::post('/payment-methods/{uuid}/default', [MemberPaymentMethodController::class, 'setDefault'])->name('api.member.payments.default');
+
+        Route::get('/orders', [MemberOrderController::class, 'index'])->name('api.member.orders');
+
+        Route::get('/notifications', [MemberNotificationController::class, 'index'])->name('api.member.notifications');
+        Route::post('/notifications/read-all', [MemberNotificationController::class, 'markAllRead'])->name('api.member.notifications.read-all');
+        Route::post('/notifications/{id}/read', [MemberNotificationController::class, 'markRead'])->name('api.member.notifications.read');
+
+        Route::get('/vouchers', [MemberVoucherController::class, 'index'])->name('api.member.vouchers.index');
+        Route::post('/vouchers/redeem', [MemberVoucherController::class, 'redeem'])->name('api.member.vouchers.redeem');
     });
 
     Route::prefix('seller')->middleware(['auth:sanctum', 'role:seller', 'throttle:api'])->group(function (): void {

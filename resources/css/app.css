@@ -230,6 +230,22 @@
         @apply bg-sh-blue-lt text-sh-blue;
     }
 
+    .member-nav-btn {
+        @apply shrink-0 rounded-lg px-3 py-2 text-left text-[13px] font-medium text-sh-s600 whitespace-nowrap hover:bg-sh-s50 hover:text-sh-s900;
+    }
+
+    .member-nav-btn.is-active {
+        @apply bg-sh-blue-lt font-semibold text-sh-blue;
+    }
+
+    .member-purchase-tab {
+        @apply rounded-lg px-3 py-2 text-[13px] font-medium text-sh-s500 hover:text-sh-s900;
+    }
+
+    .member-purchase-tab.is-active {
+        @apply font-bold text-sh-blue;
+    }
+
     .sh-nav-link-sell {
         @apply font-semibold text-sh-orange-dk hover:bg-sh-orange-lt hover:text-sh-orange-dk;
     }

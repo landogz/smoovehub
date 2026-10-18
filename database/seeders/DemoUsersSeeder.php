@@ -134,6 +134,7 @@ class DemoUsersSeeder extends Seeder
             ['email' => 'member@smoovehub.com'],
             [
                 'name' => 'Demo Member',
+                'username' => 'demo_member',
                 'password' => Hash::make('Member1234!'),
                 'status' => 'active',
                 'email_verified_at' => now(),

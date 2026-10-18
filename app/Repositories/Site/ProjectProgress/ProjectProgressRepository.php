@@ -143,9 +143,14 @@ class ProjectProgressRepository
                     'auth_status' => 'secured',
                     'data_status' => 'live',
                     'phase_api' => 2,
-                    'notes' => 'Sign Up creates a customer (member). My Account lists orders by buyer_id. Seller Dashboard is a separate store portal.',
+                    'notes' => 'Shopee-style member SPA: profile, addresses, saved cards (last4 only), purchases, notifications, vouchers. Seller Dashboard is a separate store portal.',
                     'modules' => [
-                        ['key' => 'orders', 'name' => 'My Orders', 'detail' => 'Shop purchases for the signed-in member', 'status' => 'production', 'phase' => 2],
+                        ['key' => 'profile', 'name' => 'Profile', 'detail' => 'Name, username, contact, gender, DOB, avatar', 'status' => 'production', 'phase' => 2],
+                        ['key' => 'payments', 'name' => 'Banks & Cards', 'detail' => 'Saved cards/banks as last4 metadata (Stripe Phase 3)', 'status' => 'production', 'phase' => 2],
+                        ['key' => 'addresses', 'name' => 'Addresses', 'detail' => 'Delivery addresses with default / pickup / return', 'status' => 'production', 'phase' => 2],
+                        ['key' => 'purchases', 'name' => 'My Purchase', 'detail' => 'Order tabs: to pay, ship, receive, completed', 'status' => 'production', 'phase' => 2],
+                        ['key' => 'notifications', 'name' => 'Notifications', 'detail' => 'Order updates for the signed-in member', 'status' => 'production', 'phase' => 2],
+                        ['key' => 'vouchers', 'name' => 'My Vouchers', 'detail' => 'Redeem and wallet list', 'status' => 'production', 'phase' => 2],
                     ],
                 ],
                 [
@@ -194,6 +199,12 @@ class ProjectProgressRepository
                 ['name' => 'Under Maintenance', 'path' => '/maintenance', 'detail' => 'SITE_MAINTENANCE env toggle; marketplace 503. Client payment + progress stay open.', 'status' => 'production', 'phase' => 9],
             ],
             'history' => [
+                [
+                    'date' => '2026-10-18',
+                    'title' => 'Shopee-style Member Account',
+                    'detail' => 'My Account is a sidebar SPA: profile, addresses, cards/banks (last 4 only), purchase tabs, notifications, and voucher wallet.',
+                    'status' => 'shipped',
+                ],
                 [
                     'date' => '2026-10-18',
                     'title' => 'Member vs Seller split',

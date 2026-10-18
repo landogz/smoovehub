@@ -7,6 +7,7 @@ use App\Models\Auth\UserDevice;
 use App\Models\Platform\ActivityLog;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AuthRepository
 {
@@ -31,6 +32,7 @@ class AuthRepository
     {
         return User::query()->create([
             'name' => $data['name'],
+            'username' => $this->uniqueUsername((string) $data['name']),
             'email' => $data['email'],
             'phone' => $data['phone'] ?? null,
             'password' => $data['password'],
@@ -209,5 +211,20 @@ class AuthRepository
         }
 
         return $initials !== '' ? $initials : 'U';
+    }
+
+    private function uniqueUsername(string $name): string
+    {
+        $base = Str::slug($name, '_');
+        $base = $base !== '' ? $base : 'member';
+        $username = $base;
+        $suffix = 1;
+
+        while (User::query()->where('username', $username)->exists()) {
+            $username = $base.'_'.$suffix;
+            $suffix++;
+        }
+
+        return $username;
     }
 }
