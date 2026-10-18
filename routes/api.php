@@ -40,7 +40,9 @@ Route::prefix('v1')->group(function (): void {
 
     Route::middleware('throttle:api')->group(function (): void {
         Route::post('/orders/quote', [PurchaseController::class, 'quote'])->name('api.orders.quote');
-        Route::post('/orders/purchase', [PurchaseController::class, 'store'])->name('api.orders.purchase');
+        Route::post('/orders/purchase', [PurchaseController::class, 'store'])
+            ->middleware(['auth:sanctum', 'role:customer'])
+            ->name('api.orders.purchase');
     });
 
     Route::prefix('auth')->middleware('throttle:auth')->group(function (): void {

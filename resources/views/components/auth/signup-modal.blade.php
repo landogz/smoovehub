@@ -1,4 +1,4 @@
-<x-shared.modal id="signup-modal" title="Create your SmooveHub account" maxWidth="max-w-[480px]">
+<x-shared.modal id="signup-modal" title="Create your SmooveHub account" maxWidth="max-w-[480px]" :auth-stack="true">
     <form id="signup-form" class="space-y-4" novalidate>
         <div class="sh-form-alert hidden" data-form-alert role="alert"></div>
 

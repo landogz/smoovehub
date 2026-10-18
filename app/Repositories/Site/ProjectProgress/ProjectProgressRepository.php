@@ -205,6 +205,12 @@ class ProjectProgressRepository
             'history' => [
                 [
                     'date' => '2026-10-18',
+                    'title' => 'Pay Now requires member login',
+                    'detail' => 'Guests who tap Pay Now or the cart icon are asked to sign in as a member. Purchase API is member-only; quote stays public.',
+                    'status' => 'shipped',
+                ],
+                [
+                    'date' => '2026-10-18',
                     'title' => 'Checkout Pay Now stays on screen',
                     'detail' => 'Confirm Purchase keeps Pay Now pinned at the bottom of the modal so the cookie bar no longer covers the button.',
                     'status' => 'shipped',

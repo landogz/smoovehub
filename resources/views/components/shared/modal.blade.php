@@ -2,11 +2,12 @@
     'id',
     'title',
     'maxWidth' => 'max-w-[420px]',
+    'authStack' => false,
 ])
 
 <div
     id="{{ $id }}"
-    class="sh-modal-bg"
+    @class(['sh-modal-bg', 'sh-modal-bg-auth' => $authStack])
     role="dialog"
     aria-modal="true"
     aria-labelledby="{{ $id }}-title"

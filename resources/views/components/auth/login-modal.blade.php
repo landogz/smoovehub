@@ -1,4 +1,4 @@
-<x-shared.modal id="login-modal" title="Sign in to SmooveHub">
+<x-shared.modal id="login-modal" title="Sign in to SmooveHub" :auth-stack="true">
     <form id="login-form" class="space-y-4" novalidate>
         <div class="sh-form-alert hidden" data-form-alert role="alert"></div>
 

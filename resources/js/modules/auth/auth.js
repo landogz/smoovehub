@@ -4,6 +4,8 @@ import { showToast } from '../landing/toast.js';
 
 const AUTH_TOKEN_KEY = 'smoovehub_auth_token';
 const AUTH_FINGERPRINT_KEY = 'smoovehub_device_fp';
+const PENDING_CHECKOUT_KEY = 'smoovehub_pending_checkout';
+const PENDING_CART_KEY = 'smoovehub_pending_cart';
 
 let currentUser = null;
 
@@ -248,6 +250,27 @@ async function handleAuthSuccess(response, form, modalId, successTitle) {
 
     window.dispatchEvent(new CustomEvent('smoovehub:auth-updated', { detail: user }));
 
+    const pendingCheckout = sessionStorage.getItem(PENDING_CHECKOUT_KEY) === '1';
+    const pendingCart = sessionStorage.getItem(PENDING_CART_KEY) === '1';
+
+    if (pendingCheckout) {
+        sessionStorage.removeItem(PENDING_CHECKOUT_KEY);
+
+        if (!userHasRole(user, 'customer')) {
+            showToast('Member account required', 'Pay Now is for shopper accounts. Sign in as a member to continue.', 'error');
+            return;
+        }
+
+        window.dispatchEvent(new CustomEvent('smoovehub:checkout-auth'));
+        return;
+    }
+
+    if (pendingCart) {
+        sessionStorage.removeItem(PENDING_CART_KEY);
+        window.location.href = '/account#purchases';
+        return;
+    }
+
     const path = getRedirectPath(user);
 
     if (path) {
@@ -409,6 +432,21 @@ function toggleNavMenuLink(id, visible) {
     link.classList.toggle('block', visible);
 }
 
+function initCartLink() {
+    document.querySelectorAll('[data-cart-link]').forEach((link) => {
+        link.addEventListener('click', (event) => {
+            if (userHasRole(currentUser, 'customer')) {
+                return;
+            }
+
+            event.preventDefault();
+            sessionStorage.setItem(PENDING_CART_KEY, '1');
+            showToast('Member login required', 'Sign in to view your cart and purchases.', 'warn');
+            openAuthModal('login');
+        });
+    });
+}
+
 function initUserMenu() {
     const toggle = document.getElementById('nav-user-toggle');
     const menu = document.getElementById('nav-user-menu');
@@ -441,6 +479,7 @@ export function initAuth() {
     initLogoutActions();
     initModalLinks();
     initUserMenu();
+    initCartLink();
     restoreSession();
 }
 
@@ -463,4 +502,12 @@ export function setCurrentUser(user) {
 
 export function openAuthModal(type = 'login') {
     openModal(type === 'signup' ? 'signup-modal' : 'login-modal');
+}
+
+export function userIsMember(user = currentUser) {
+    return userHasRole(user, 'customer');
+}
+
+export function rememberPendingCheckout() {
+    sessionStorage.setItem(PENDING_CHECKOUT_KEY, '1');
 }

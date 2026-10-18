@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { closeModal, openModal } from '../../shared/modal.js';
+import { openAuthModal, rememberPendingCheckout, userIsMember } from '../auth/auth.js';
 import { showToast } from '../landing/toast.js';
 import {
     CONDITION_LABELS,
@@ -204,6 +205,13 @@ export async function completePurchase() {
         return;
     }
 
+    if (!userIsMember()) {
+        rememberPendingCheckout();
+        showToast('Member login required', 'Sign in or create a member account to pay.', 'warn');
+        openAuthModal('login');
+        return;
+    }
+
     const product = currentPurchaseProduct;
     const submit = document.querySelector('[data-purchase-submit]');
 
@@ -228,6 +236,13 @@ export async function completePurchase() {
 
         finalizePurchase(orderNum, product, addr, order?.total ?? product.price);
     } catch (error) {
+        if (error.response?.status === 401 || error.response?.status === 403) {
+            rememberPendingCheckout();
+            showToast('Member login required', 'Sign in with a shopper (member) account to pay.', 'warn');
+            openAuthModal('login');
+            return;
+        }
+
         const message = error.response?.data?.message ?? 'The order could not be placed. Please try again.';
         showToast('Order not placed', message, 'error');
     } finally {
@@ -337,6 +352,15 @@ function initPurchaseModal() {
     });
 
     document.querySelector('[data-purchase-submit]')?.addEventListener('click', completePurchase);
+
+    window.addEventListener('smoovehub:checkout-auth', () => {
+        if (!currentPurchaseProduct) {
+            return;
+        }
+
+        openModal('purchase-modal');
+        completePurchase();
+    });
 }
 
 export async function loadCatalog() {

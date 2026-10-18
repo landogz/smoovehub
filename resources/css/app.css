@@ -788,6 +788,10 @@
         @apply flex;
     }
 
+    .sh-modal-bg-auth {
+        @apply z-[960];
+    }
+
     .sh-modal {
         @apply flex max-h-[min(90vh,720px)] w-full flex-col overflow-hidden rounded-[20px] border border-sh-s200 bg-white shadow-[0_16px_48px_rgba(15,23,42,0.14)];
     }

@@ -4,7 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\Catalog\Product;
 use App\Models\Order\Order;
+use App\Models\User;
 use Database\Seeders\CatalogProductSeeder;
+use Database\Seeders\DemoUsersSeeder;
 use Database\Seeders\SmooveHubDatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -59,9 +61,10 @@ class CatalogOrderTest extends TestCase
             ]),
         ]);
 
-        $this->seed([SmooveHubDatabaseSeeder::class, CatalogProductSeeder::class]);
+        $this->seed([SmooveHubDatabaseSeeder::class, CatalogProductSeeder::class, DemoUsersSeeder::class]);
 
         $product = Product::query()->where('sku', 'SH-RES-001')->firstOrFail();
+        $member = User::query()->where('email', 'member@smoovehub.com')->firstOrFail();
 
         $this->postJson('/api/v1/orders/purchase', [
             'product_id' => $product->uuid,
@@ -69,6 +72,15 @@ class CatalogOrderTest extends TestCase
             'delivery_zip' => '75201',
             'delivery_type' => 'CURBSIDE',
         ])
+            ->assertUnauthorized();
+
+        $this->actingAs($member)
+            ->postJson('/api/v1/orders/purchase', [
+                'product_id' => $product->uuid,
+                'delivery_address' => '123 Main St, Dallas, TX',
+                'delivery_zip' => '75201',
+                'delivery_type' => 'CURBSIDE',
+            ])
             ->assertCreated()
             ->assertJsonPath('status', true)
             ->assertJsonPath('data.order.payment_status', 'unpaid');
