@@ -3,6 +3,8 @@
 namespace App\Repositories\Site;
 
 use App\Models\Content\NewsletterSubscription;
+use App\Models\Seller\SellerProfile;
+use Illuminate\Support\Facades\Storage;
 
 class SitePageRepository
 {
@@ -946,6 +948,14 @@ class SitePageRepository
      */
     public function sellers(): array
     {
+        return $this->mergeLiveSellers($this->prototypeSellers());
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function prototypeSellers(): array
+    {
         return [
             [
                 'slug' => 'homestyle-co',
@@ -1038,6 +1048,80 @@ class SitePageRepository
                 'since' => 2025,
                 'email' => 'demo@smoovehub.com',
             ],
+        ];
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $directory
+     * @return array<int, array<string, mixed>>
+     */
+    private function mergeLiveSellers(array $directory): array
+    {
+        $bySlug = [];
+
+        foreach ($directory as $seller) {
+            $bySlug[$seller['slug']] = $seller;
+        }
+
+        SellerProfile::query()
+            ->with('user')
+            ->get()
+            ->each(function (SellerProfile $profile) use (&$bySlug): void {
+                $existing = $bySlug[$profile->store_slug] ?? [];
+                $mapped = $this->directorySellerFromProfile($profile);
+
+                if (isset($existing['category_tone'])) {
+                    unset($mapped['category'], $mapped['category_tone']);
+                }
+
+                $bySlug[$profile->store_slug] = array_merge($existing, $mapped);
+            });
+
+        return array_values($bySlug);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function directorySellerFromProfile(SellerProfile $profile): array
+    {
+        $type = strtolower((string) $profile->business_type);
+        $tone = 'mixed';
+        $category = $profile->business_type ?: 'Mixed';
+
+        if (str_contains($type, 'commercial') || str_contains($type, 'office')) {
+            $tone = 'commercial';
+            $category = 'Commercial';
+        } elseif (str_contains($type, 'appliance')) {
+            $tone = 'appliances';
+            $category = 'Appliances';
+        } elseif (str_contains($type, 'residential') || str_contains($type, 'furniture')) {
+            $tone = 'residential';
+            $category = 'Residential';
+        }
+
+        $words = preg_split('/\s+/', trim((string) $profile->store_name)) ?: [];
+        $initials = strtoupper(substr($words[0] ?? 'S', 0, 1).(isset($words[1]) ? substr($words[1], 0, 1) : ''));
+
+        return [
+            'slug' => $profile->store_slug,
+            'name' => $profile->store_name,
+            'initials' => $initials,
+            'logo_url' => $profile->logo_path ? Storage::disk('public')->url($profile->logo_path) : null,
+            'category' => $category,
+            'category_tone' => $tone,
+            'btype' => $profile->business_type ?: 'Seller',
+            'desc' => $profile->description ?: '',
+            'rating' => round((float) ($profile->rating_avg ?? 0), 1),
+            'sales' => (int) ($profile->review_count ?? 0),
+            'since' => $profile->member_since?->year ?? $profile->created_at?->year,
+            'email' => $profile->user?->email,
+            'phone' => $profile->user?->phone,
+            'city' => $profile->city,
+            'state' => $profile->state,
+            'pickup_zip' => $profile->pickup_zip,
+            'street' => $profile->street,
+            'verified' => $profile->verification_status === 'verified',
         ];
     }
 

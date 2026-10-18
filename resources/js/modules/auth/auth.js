@@ -191,7 +191,11 @@ function updateNavbar(user) {
         role.textContent = displayRoleLabel(user);
     }
 
+    const isMember = userHasRole(user, 'customer');
     const isSeller = userHasRole(user, 'seller');
+    document.getElementById('nav-link-account')?.classList.toggle('hidden', !isMember);
+    document.getElementById('nav-link-account')?.classList.toggle('block', isMember);
+    document.getElementById('nav-link-account-mobile')?.classList.toggle('hidden', !isMember);
     document.getElementById('nav-link-seller')?.classList.toggle('hidden', !isSeller);
     document.getElementById('nav-link-seller-mobile')?.classList.toggle('hidden', !isSeller);
 

@@ -8,6 +8,7 @@ use App\Repositories\Seller\SellerPayoutAccountRepository;
 use App\Repositories\Seller\SellerVoucherRepository;
 use App\Services\Audit\ActivityLogger;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 
 class SellerDashboardService
 {
@@ -180,6 +181,20 @@ class SellerDashboardService
         $this->activityLogger->log($user, 'seller.settings.updated', 'seller_profile', $profile->id, [
             'store_name' => $settings['store_name'],
         ], $request);
+
+        return $settings;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function storeLogo(User $user, UploadedFile $file, Request $request): array
+    {
+        $profile = $this->repository->requireProfile($user);
+        $path = $file->store('store-logos', 'public');
+        $settings = $this->repository->storeLogo($profile, $user, $path);
+
+        $this->activityLogger->log($user, 'seller.logo.updated', 'seller_profile', $profile->id, [], $request);
 
         return $settings;
     }

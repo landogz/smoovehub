@@ -7,6 +7,8 @@ use App\Models\User;
 use Database\Seeders\DemoUsersSeeder;
 use Database\Seeders\SmooveHubDatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class SellerDashboardTest extends TestCase
@@ -65,6 +67,9 @@ class SellerDashboardTest extends TestCase
                 'store_name' => 'Demo Seller Studio',
                 'city' => 'Dallas',
                 'state' => 'TX',
+                'phone' => '2145550199',
+                'pickup_zip' => '75201',
+                'street' => '100 Warehouse Way',
                 'accepts_onsite_visits' => true,
                 'policies' => [
                     'returns' => '7-day returns',
@@ -73,7 +78,29 @@ class SellerDashboardTest extends TestCase
             ])
             ->assertOk()
             ->assertJsonPath('data.settings.store_name', 'Demo Seller Studio')
+            ->assertJsonPath('data.settings.phone', '2145550199')
+            ->assertJsonPath('data.settings.pickup_zip', '75201')
             ->assertJsonPath('data.settings.policies.returns', '7-day returns');
+    }
+
+    public function test_seller_can_upload_store_logo(): void
+    {
+        Storage::fake('public');
+        $seller = $this->demoSeller();
+
+        $this->actingAs($seller)
+            ->post('/api/v1/seller/logo', [
+                'logo' => UploadedFile::fake()->image('store.jpg', 200, 200),
+            ], ['Accept' => 'application/json'])
+            ->assertOk()
+            ->assertJsonPath('status', true);
+
+        $this->actingAs($seller)
+            ->getJson('/api/v1/seller/settings')
+            ->assertOk()
+            ->assertJsonPath('status', true);
+
+        $this->assertNotEmpty($seller->fresh()->sellerProfile?->logo_path);
     }
 
     public function test_seller_can_update_order_status_and_manage_payout_banks(): void

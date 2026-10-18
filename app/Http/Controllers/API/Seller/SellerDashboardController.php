@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\Seller;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Seller\StoreSellerLogoRequest;
 use App\Http\Requests\Seller\StoreSellerPayoutAccountRequest;
 use App\Http\Requests\Seller\StoreSellerVoucherRequest;
 use App\Http\Requests\Seller\UpdateOnsiteAppointmentRequest;
@@ -70,6 +71,15 @@ class SellerDashboardController extends Controller
             'status' => true,
             'message' => 'Store settings saved.',
             'data' => ['settings' => $this->service->updateSettings($request->user(), $request->validated(), $request)],
+        ]);
+    }
+
+    public function storeLogo(StoreSellerLogoRequest $request): JsonResponse
+    {
+        return response()->json([
+            'status' => true,
+            'message' => 'Store logo updated.',
+            'data' => ['settings' => $this->service->storeLogo($request->user(), $request->file('logo'), $request)],
         ]);
     }
 

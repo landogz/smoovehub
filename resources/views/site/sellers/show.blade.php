@@ -9,8 +9,12 @@
         <div class="sh-container">
             <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                 <div class="flex items-start gap-5">
-                    <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/15 text-2xl font-black md:h-20 md:w-20">
-                        {{ strtoupper(substr($seller['name'], 0, 1)) }}
+                    <div class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white/15 text-2xl font-black md:h-20 md:w-20">
+                        @if (! empty($seller['logo_url']))
+                            <img src="{{ $seller['logo_url'] }}" alt="" class="h-full w-full object-cover">
+                        @else
+                            {{ strtoupper(substr($seller['name'], 0, 1)) }}
+                        @endif
                     </div>
                     <div>
                         <div class="mb-2 flex flex-wrap items-center gap-2">
@@ -121,6 +125,18 @@
                             <dt class="text-xs font-semibold uppercase tracking-widest text-sh-s400">Total Sales</dt>
                             <dd class="mt-1 text-sm font-medium text-sh-s900">{{ $seller['sales'] }}</dd>
                         </div>
+                        @if (! empty($seller['city']) || ! empty($seller['pickup_zip']))
+                            <div>
+                                <dt class="text-xs font-semibold uppercase tracking-widest text-sh-s400">Location</dt>
+                                <dd class="mt-1 text-sm font-medium text-sh-s900">{{ trim(implode(', ', array_filter([$seller['street'] ?? null, $seller['city'] ?? null, $seller['state'] ?? null, $seller['pickup_zip'] ?? null]))) }}</dd>
+                            </div>
+                        @endif
+                        @if (! empty($seller['phone']))
+                            <div>
+                                <dt class="text-xs font-semibold uppercase tracking-widest text-sh-s400">Phone</dt>
+                                <dd class="mt-1 text-sm font-medium text-sh-s900">{{ $seller['phone'] }}</dd>
+                            </div>
+                        @endif
                         <div class="sm:col-span-2">
                             <dt class="text-xs font-semibold uppercase tracking-widest text-sh-s400">Contact</dt>
                             <dd class="mt-1 text-sm font-medium text-sh-blue">

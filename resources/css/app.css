@@ -977,7 +977,7 @@
     }
 
     .sh-sdir-avatar {
-        @apply absolute -bottom-[22px] left-[18px] flex h-[50px] w-[50px] items-center justify-center rounded-xl border-[3px] border-white bg-gradient-to-br from-sh-orange to-sh-orange-dk text-lg font-black text-white shadow-[0_4px_12px_rgba(0,0,0,0.2)];
+        @apply absolute -bottom-[22px] left-[18px] flex h-[50px] w-[50px] items-center justify-center overflow-hidden rounded-xl border-[3px] border-white bg-gradient-to-br from-sh-orange to-sh-orange-dk text-lg font-black text-white shadow-[0_4px_12px_rgba(0,0,0,0.2)];
     }
 
     .sh-sdir-body {
@@ -1881,6 +1881,10 @@ main,
 
 .sh-dash-ghost {
     @apply inline-flex items-center rounded-lg border border-sh-s200 bg-white px-2.5 py-1.5 text-[12px] font-semibold text-sh-s700 transition-colors hover:border-sh-blue hover:text-sh-blue;
+}
+
+.sh-store-logo {
+    @apply flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-sh-s100 text-lg font-bold text-sh-s600;
 }
 
 .sh-dolores-root {

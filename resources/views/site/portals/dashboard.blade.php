@@ -10,7 +10,7 @@
                     <img src="{{ asset('images/landing/logo-nav.png') }}" alt="SmooveHub" class="h-9 brightness-0 invert">
                 </a>
                 <div class="mt-5 flex items-center gap-3">
-                    <div id="dash-seller-avatar" class="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white/10 text-xs font-bold ring-2 ring-white/10">S</div>
+                    <div id="dash-seller-avatar" class="sh-store-logo h-11 w-11 rounded-xl bg-white/10 text-xs font-bold text-white ring-2 ring-white/10">S</div>
                     <div class="min-w-0">
                         <div id="dash-seller-name" class="truncate text-sm font-semibold">My Store</div>
                         <div id="dash-seller-username" class="truncate text-[12px] text-white/55">Seller</div>
@@ -246,19 +246,78 @@
                 <div id="dash-settings" class="sh-dash-panel hidden">
                     <div class="mb-6">
                         <h2 class="sh-dash-page-title">Settings</h2>
-                        <p class="sh-dash-page-copy">Store profile, location, and customer-facing policies.</p>
+                        <p class="sh-dash-page-copy">Brand, contact, pickup location, and customer-facing policies.</p>
                     </div>
-                    <div class="grid max-w-4xl gap-5 lg:grid-cols-2">
-                        <div class="sh-dash-card p-5 lg:col-span-2">
-                            <h3 class="mb-4 text-sm font-semibold text-sh-s900">Store profile</h3>
+                    <div class="grid max-w-4xl gap-5">
+                        <div class="sh-dash-card p-5">
+                            <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                                <div>
+                                    <h3 class="text-sm font-semibold text-sh-s900">Public store</h3>
+                                    <p id="set-public-url" class="mt-1 break-all font-mono text-[12px] text-sh-s500">smoovehub.com/store/my-store</p>
+                                    <div class="mt-2 flex flex-wrap items-center gap-2">
+                                        <span id="set-verified" class="sh-badge sh-badge-amber">Pending</span>
+                                        <span id="set-rating" class="text-[12px] text-sh-s500">Rating —</span>
+                                        <span id="set-member-since" class="text-[12px] text-sh-s500"></span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <button type="button" class="sh-dash-ghost" data-copy-store-url>Copy link</button>
+                                    <button type="button" class="sh-dash-ghost" data-open-my-store>View store</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sh-dash-card overflow-hidden">
+                            <div class="border-b border-sh-s100 bg-sh-s50 px-5 py-4">
+                                <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-sh-s400">Shopper preview</p>
+                                <div class="mt-3 flex items-center gap-3">
+                                    <div id="set-preview-logo" class="sh-store-logo">S</div>
+                                    <div class="min-w-0">
+                                        <div id="set-preview-name" class="truncate text-sm font-semibold text-sh-s900">My Store</div>
+                                        <div id="set-preview-meta" class="truncate text-[12px] text-sh-s500">Location not set</div>
+                                        <span id="set-preview-onsite" class="mt-1 hidden text-[11px] font-semibold text-sh-blue">Onsite visits welcome</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-5">
+                                <h3 class="mb-4 text-sm font-semibold text-sh-s900">Brand</h3>
+                                <div class="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center">
+                                    <div id="set-logo-preview" class="sh-store-logo h-20 w-20 text-xl">S</div>
+                                    <div>
+                                        <label class="sh-dash-ghost cursor-pointer">
+                                            Upload logo
+                                            <input id="set-logo" class="sr-only" type="file" accept="image/jpeg,image/png">
+                                        </label>
+                                        <p class="mt-2 text-[12px] text-sh-s500">Square JPEG or PNG, up to 1 MB. Shown to shoppers, not your personal photo.</p>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 gap-4">
+                                    <div class="sh-form-field mb-0">
+                                        <label class="sh-form-label" for="set-store-name">Store name</label>
+                                        <input id="set-store-name" class="sh-form-input" type="text" placeholder="My Store">
+                                    </div>
+                                    <div class="sh-form-field mb-0">
+                                        <label class="sh-form-label" for="set-description">Description</label>
+                                        <textarea id="set-description" class="sh-form-input resize-none" rows="3" placeholder="Tell shoppers about your store"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sh-dash-card p-5">
+                            <h3 class="mb-4 text-sm font-semibold text-sh-s900">Contact and location</h3>
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div class="sh-form-field mb-0 sm:col-span-2">
-                                    <label class="sh-form-label" for="set-store-name">Store name</label>
-                                    <input id="set-store-name" class="sh-form-input" type="text" placeholder="My Store">
+                                <div class="sh-form-field mb-0">
+                                    <label class="sh-form-label" for="set-phone">Phone</label>
+                                    <input id="set-phone" class="sh-form-input" type="tel" placeholder="(555) 000-0000">
+                                </div>
+                                <div class="sh-form-field mb-0">
+                                    <label class="sh-form-label" for="set-email">Email</label>
+                                    <input id="set-email" class="sh-form-input" type="email" disabled>
                                 </div>
                                 <div class="sh-form-field mb-0 sm:col-span-2">
-                                    <label class="sh-form-label" for="set-description">Description</label>
-                                    <textarea id="set-description" class="sh-form-input resize-none" rows="3" placeholder="Tell shoppers about your store"></textarea>
+                                    <label class="sh-form-label" for="set-street">Street</label>
+                                    <input id="set-street" class="sh-form-input" type="text" placeholder="123 Warehouse Ave">
                                 </div>
                                 <div class="sh-form-field mb-0">
                                     <label class="sh-form-label" for="set-city">City</label>
@@ -269,12 +328,12 @@
                                     <input id="set-state" class="sh-form-input" type="text" maxlength="40" placeholder="TX">
                                 </div>
                                 <div class="sh-form-field mb-0">
-                                    <label class="sh-form-label" for="set-business-type">Business type</label>
-                                    <input id="set-business-type" class="sh-form-input" type="text" placeholder="Reseller">
+                                    <label class="sh-form-label" for="set-zip">Pickup ZIP</label>
+                                    <input id="set-zip" class="sh-form-input" type="text" maxlength="10" placeholder="75201">
                                 </div>
                                 <div class="sh-form-field mb-0">
-                                    <label class="sh-form-label" for="set-email">Email</label>
-                                    <input id="set-email" class="sh-form-input" type="email" disabled>
+                                    <label class="sh-form-label" for="set-business-type">Business type</label>
+                                    <input id="set-business-type" class="sh-form-input" type="text" placeholder="Reseller">
                                 </div>
                                 <label class="flex items-center gap-2 text-[13px] text-sh-s700 sm:col-span-2">
                                     <input id="set-onsite" type="checkbox" class="h-4 w-4 rounded border-sh-s300 text-sh-blue">
@@ -282,7 +341,8 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="sh-dash-card p-5 lg:col-span-2">
+
+                        <div class="sh-dash-card p-5">
                             <h3 class="mb-4 text-sm font-semibold text-sh-s900">Policies</h3>
                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div class="sh-form-field mb-0">

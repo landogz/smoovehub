@@ -11,6 +11,7 @@ use App\Models\Seller\SellerProfile;
 use App\Models\Tracking\OnsiteVisitAppointment;
 use App\Models\User;
 use App\Services\Platform\MarkupCalculationService;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\NewAccessToken;
@@ -114,15 +115,36 @@ class SellerDashboardRepository
         $policies['returns'] = $incomingPolicies['returns'] ?? ($policies['returns'] ?? null);
         $policies['shipping'] = $incomingPolicies['shipping'] ?? ($policies['shipping'] ?? null);
 
+        if (array_key_exists('phone', $payload)) {
+            $user->phone = $payload['phone'] ?: null;
+            $user->save();
+        }
+
         $profile->update([
             'store_name' => $payload['store_name'],
             'description' => $payload['description'] ?? $profile->description,
             'city' => $payload['city'] ?? $profile->city,
             'state' => $payload['state'] ?? $profile->state,
+            'pickup_zip' => array_key_exists('pickup_zip', $payload) ? ($payload['pickup_zip'] ?: null) : $profile->pickup_zip,
+            'street' => array_key_exists('street', $payload) ? ($payload['street'] ?: null) : $profile->street,
             'business_type' => $payload['business_type'] ?? $profile->business_type,
             'accepts_onsite_visits' => (bool) ($payload['accepts_onsite_visits'] ?? $profile->accepts_onsite_visits),
             'policies' => $policies,
         ]);
+
+        return $this->storePayload($profile->fresh(), $user->fresh());
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function storeLogo(SellerProfile $profile, User $user, string $path): array
+    {
+        if ($profile->logo_path && $profile->logo_path !== $path) {
+            Storage::disk('public')->delete($profile->logo_path);
+        }
+
+        $profile->update(['logo_path' => $path]);
 
         return $this->storePayload($profile->fresh(), $user);
     }
@@ -377,11 +399,17 @@ class SellerDashboardRepository
             'store_name' => $profile->store_name,
             'store_slug' => $profile->store_slug,
             'description' => $profile->description,
+            'logo_url' => $this->logoUrl($profile),
             'city' => $profile->city,
             'state' => $profile->state,
+            'pickup_zip' => $profile->pickup_zip,
+            'street' => $profile->street,
             'business_type' => $profile->business_type,
             'email' => $user?->email,
+            'phone' => $user?->phone,
             'rating' => (float) ($profile->rating_avg ?? 0),
+            'product_count' => (int) ($profile->product_count ?? 0),
+            'member_since' => $profile->member_since?->toDateString(),
             'accepts_onsite_visits' => (bool) $profile->accepts_onsite_visits,
             'verified' => $profile->verification_status === 'verified',
             'policies' => [
@@ -389,6 +417,15 @@ class SellerDashboardRepository
                 'shipping' => is_array($profile->policies) ? ($profile->policies['shipping'] ?? '') : '',
             ],
         ];
+    }
+
+    private function logoUrl(SellerProfile $profile): ?string
+    {
+        if (! $profile->logo_path) {
+            return null;
+        }
+
+        return Storage::disk('public')->url($profile->logo_path);
     }
 
     /**

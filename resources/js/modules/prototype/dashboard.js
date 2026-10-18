@@ -142,6 +142,33 @@ export function refreshDashboard() {
     loadDashboardOverview();
 }
 
+function storeInitials(name) {
+    const parts = String(name ?? 'S').trim().split(/\s+/).filter(Boolean);
+
+    if (parts.length === 0) {
+        return 'S';
+    }
+
+    if (parts.length === 1) {
+        return parts[0].slice(0, 1).toUpperCase();
+    }
+
+    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+}
+
+function paintStoreLogo(element, store) {
+    if (!element) {
+        return;
+    }
+
+    if (store?.logo_url) {
+        element.innerHTML = `<img src="${escapeHtml(store.logo_url)}" alt="" class="h-full w-full object-cover">`;
+        return;
+    }
+
+    element.textContent = storeInitials(store?.store_name);
+}
+
 function paintAvatar(element, user) {
     if (!element) {
         return;
@@ -162,7 +189,6 @@ function applySellerIdentity(user) {
     setText('dash-seller-username', username);
     setText('dash-header-username', username);
     setText('dash-header-name', displayName);
-    paintAvatar(document.getElementById('dash-seller-avatar'), user);
     paintAvatar(document.getElementById('dash-header-avatar'), user);
 }
 
@@ -183,20 +209,26 @@ function applyStorefront(store) {
         headerName.textContent = store.store_name;
     }
 
+    const hostUrl = store.store_slug ? `${window.location.host}/store/${store.store_slug}` : '';
+
     const storeUrl = document.getElementById('dash-store-url');
 
-    if (storeUrl && store.store_slug) {
-        storeUrl.textContent = `${window.location.host}/store/${store.store_slug}`;
+    if (storeUrl && hostUrl) {
+        storeUrl.textContent = hostUrl;
     }
 
+    paintStoreLogo(document.getElementById('dash-seller-avatar'), store);
     fillSettingsForm(store);
 }
 
 function fillSettingsForm(settings) {
     setValue('set-store-name', settings.store_name ?? '');
     setValue('set-description', settings.description ?? '');
+    setValue('set-phone', settings.phone ?? '');
     setValue('set-city', settings.city ?? '');
     setValue('set-state', settings.state ?? '');
+    setValue('set-zip', settings.pickup_zip ?? '');
+    setValue('set-street', settings.street ?? '');
     setValue('set-business-type', settings.business_type ?? '');
     setValue('set-email', settings.email ?? getCurrentUser()?.email ?? '');
     setValue('set-returns', settings.policies?.returns ?? '');
@@ -207,6 +239,33 @@ function fillSettingsForm(settings) {
     if (onsite) {
         onsite.checked = Boolean(settings.accepts_onsite_visits);
     }
+
+    const publicUrl = settings.store_slug ? `${window.location.host}/store/${settings.store_slug}` : '';
+    setText('set-public-url', publicUrl || 'Store URL pending');
+
+    const verified = document.getElementById('set-verified');
+
+    if (verified) {
+        verified.textContent = settings.verified ? 'Verified' : 'Pending';
+        verified.className = settings.verified ? 'sh-badge sh-badge-green' : 'sh-badge sh-badge-amber';
+    }
+
+    setText('set-rating', settings.rating ? `Rating ${Number(settings.rating).toFixed(1)}` : 'Rating —');
+    setText('set-member-since', settings.member_since ? `Since ${settings.member_since}` : '');
+    setText('set-preview-name', settings.store_name ?? 'My Store');
+
+    const location = [settings.city, settings.state, settings.pickup_zip].filter(Boolean).join(', ');
+    setText('set-preview-meta', location || 'Location not set');
+
+    const onsiteHint = document.getElementById('set-preview-onsite');
+
+    if (onsiteHint) {
+        onsiteHint.classList.toggle('hidden', !settings.accepts_onsite_visits);
+        onsiteHint.classList.toggle('block', Boolean(settings.accepts_onsite_visits));
+    }
+
+    paintStoreLogo(document.getElementById('set-preview-logo'), settings);
+    paintStoreLogo(document.getElementById('set-logo-preview'), settings);
 }
 
 function setText(id, value) {
@@ -590,8 +649,11 @@ export async function saveSellerSettings() {
         const response = await axios.put('/api/v1/seller/settings', {
             store_name: name,
             description: document.getElementById('set-description')?.value.trim() || null,
+            phone: document.getElementById('set-phone')?.value.trim() || null,
             city: document.getElementById('set-city')?.value.trim() || null,
             state: document.getElementById('set-state')?.value.trim() || null,
+            pickup_zip: document.getElementById('set-zip')?.value.trim() || null,
+            street: document.getElementById('set-street')?.value.trim() || null,
             business_type: document.getElementById('set-business-type')?.value.trim() || null,
             accepts_onsite_visits: Boolean(document.getElementById('set-onsite')?.checked),
             policies: {
@@ -880,6 +942,43 @@ export function initDashboard() {
 
     document.querySelector('[data-save-settings]')?.addEventListener('click', () => {
         window.dispatchEvent(new CustomEvent('smoovehub:save-settings'));
+    });
+
+    document.getElementById('set-logo')?.addEventListener('change', async (event) => {
+        const file = event.target.files?.[0];
+
+        if (!file) {
+            return;
+        }
+
+        const form = new FormData();
+        form.append('logo', file);
+
+        try {
+            const response = await axios.post('/api/v1/seller/logo', form);
+            applyStorefront(response.data?.data?.settings);
+            showToast('Logo updated', response.data?.message ?? 'Your store logo is live.', 'success');
+        } catch (error) {
+            showToast('Logo failed', error.response?.data?.message ?? 'Could not upload that image.', 'error');
+        }
+
+        event.target.value = '';
+    });
+
+    document.querySelector('[data-copy-store-url]')?.addEventListener('click', async () => {
+        const url = document.getElementById('set-public-url')?.textContent?.trim();
+
+        if (!url || url.includes('pending')) {
+            showToast('No store URL', 'Save a store name first to generate a public link.', 'warn');
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(`${window.location.protocol}//${url}`);
+            showToast('Link copied', 'Store URL is on your clipboard.', 'success');
+        } catch {
+            showToast('Copy failed', url, 'warn');
+        }
     });
 
     document.querySelector('[data-open-bank-modal]')?.addEventListener('click', () => openModal('seller-bank-modal'));

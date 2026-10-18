@@ -87,6 +87,7 @@ Route::prefix('v1')->group(function (): void {
         Route::delete('/vouchers/{uuid}', [SellerDashboardController::class, 'destroyVoucher'])->name('api.seller.vouchers.destroy');
         Route::get('/settings', [SellerDashboardController::class, 'settings'])->name('api.seller.settings.show');
         Route::put('/settings', [SellerDashboardController::class, 'updateSettings'])->name('api.seller.settings.update');
+        Route::post('/logo', [SellerDashboardController::class, 'storeLogo'])->name('api.seller.logo');
         Route::get('/dist-catalog', [SellerDashboardController::class, 'distCatalog'])->name('api.seller.dist-catalog');
         Route::post('/dist-catalog/{uuid}/import', [SellerDashboardController::class, 'importDistSku'])->name('api.seller.dist-catalog.import');
         Route::get('/imports', [SellerDashboardController::class, 'imports'])->name('api.seller.imports');

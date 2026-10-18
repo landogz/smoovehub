@@ -169,7 +169,7 @@ class ProjectProgressRepository
                         ['key' => 'payouts', 'name' => 'Payouts', 'detail' => 'Friday payout copy + last4 bank accounts (Stripe Connect Phase 3)', 'status' => 'production', 'phase' => 4],
                         ['key' => 'banks', 'name' => 'Bank accounts', 'detail' => 'Seller payout banks stored as last4 metadata only', 'status' => 'production', 'phase' => 4],
                         ['key' => 'vouchers', 'name' => 'Vouchers', 'detail' => 'Store-scoped coupon CRUD; members redeem on /account', 'status' => 'production', 'phase' => 4],
-                        ['key' => 'settings', 'name' => 'Settings', 'detail' => 'Store profile, location, onsite visits, return/shipping policies', 'status' => 'production', 'phase' => 4],
+                        ['key' => 'settings', 'name' => 'Settings', 'detail' => 'Store logo, phone, pickup ZIP, policies, public store preview', 'status' => 'production', 'phase' => 4],
                         ['key' => 'distcatalog', 'name' => 'Distribution Catalog', 'detail' => 'Browse / import distributor SKUs (empty until Phase 5 inventory)', 'status' => 'production', 'phase' => 4],
                         ['key' => 'myimports', 'name' => 'My Imports', 'detail' => 'Imported distribution listings', 'status' => 'production', 'phase' => 4],
                         ['key' => 'mypurchases', 'name' => 'My Purchases', 'detail' => 'Distribution purchase history', 'status' => 'production', 'phase' => 4],
@@ -183,8 +183,8 @@ class ProjectProgressRepository
                 ['name' => 'The Shop', 'path' => '/shop', 'detail' => 'Catalog grid, filters, purchase modal; CRS delivery fee from Competitive Relocation service rates', 'status' => 'production', 'phase' => 2],
                 ['name' => 'Member Account', 'path' => '/account', 'detail' => 'Shopper orders for signed-in members (customers)', 'status' => 'production', 'phase' => 2],
                 ['name' => 'Sell / Onboarding', 'path' => '/sell', 'detail' => 'Seller signup CTA + wizard', 'status' => 'prototype', 'phase' => 4],
-                ['name' => 'Sellers Directory', 'path' => '/sellers', 'detail' => 'Reseller directory', 'status' => 'prototype', 'phase' => 4],
-                ['name' => 'Seller Storefront', 'path' => '/store/{slug}', 'detail' => 'Branded B2C store page', 'status' => 'prototype', 'phase' => 4],
+                ['name' => 'Sellers Directory', 'path' => '/sellers', 'detail' => 'Reseller directory with live store logos when uploaded', 'status' => 'prototype', 'phase' => 4],
+                ['name' => 'Seller Storefront', 'path' => '/store/{slug}', 'detail' => 'B2C store page; live seller_profiles overlay name, logo, location', 'status' => 'prototype', 'phase' => 4],
                 ['name' => 'Delivery Quote', 'path' => '/quote', 'detail' => 'CRS multi-step quote wizard', 'status' => 'prototype', 'phase' => 7],
                 ['name' => 'Driver Sign-up', 'path' => '/drive', 'detail' => 'Multi-step wizard; login via CRS CRM', 'status' => 'prototype', 'phase' => 7],
                 ['name' => 'Design Your Room', 'path' => '/design-room', 'detail' => 'Canvas, camera/upload, catalog place, save/share', 'status' => 'prototype', 'phase' => 7],
@@ -201,6 +201,12 @@ class ProjectProgressRepository
                 ['name' => 'Under Maintenance', 'path' => '/maintenance', 'detail' => 'SITE_MAINTENANCE env toggle; marketplace 503. Client payment + progress stay open.', 'status' => 'production', 'phase' => 9],
             ],
             'history' => [
+                [
+                    'date' => '2026-10-18',
+                    'title' => 'Seller store branding',
+                    'detail' => 'Settings now uploads a store logo, phone, pickup ZIP, and street. Logo and live profile overlay the public /store and /sellers pages.',
+                    'status' => 'shipped',
+                ],
                 [
                     'date' => '2026-10-18',
                     'title' => 'Seller Dashboard complete',

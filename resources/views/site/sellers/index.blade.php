@@ -40,7 +40,13 @@
                         data-seller-category="{{ strtolower($seller['category']) }}"
                     >
                         <div class="sh-sdir-card-banner">
-                            <div class="sh-sdir-avatar" aria-hidden="true">{{ $seller['initials'] ?? strtoupper(substr($seller['name'], 0, 1)) }}</div>
+                            <div class="sh-sdir-avatar" aria-hidden="true">
+                                @if (! empty($seller['logo_url']))
+                                    <img src="{{ $seller['logo_url'] }}" alt="" class="h-full w-full object-cover">
+                                @else
+                                    {{ $seller['initials'] ?? strtoupper(substr($seller['name'], 0, 1)) }}
+                                @endif
+                            </div>
                         </div>
 
                         <div class="sh-sdir-body">

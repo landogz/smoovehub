@@ -19,8 +19,11 @@ class UpdateSellerSettingsRequest extends FormRequest
         return [
             'store_name' => ['required', 'string', 'max:120'],
             'description' => ['nullable', 'string', 'max:2000'],
+            'phone' => ['nullable', 'string', 'max:30'],
             'city' => ['nullable', 'string', 'max:80'],
             'state' => ['nullable', 'string', 'max:40'],
+            'pickup_zip' => ['nullable', 'string', 'max:10'],
+            'street' => ['nullable', 'string', 'max:160'],
             'business_type' => ['nullable', 'string', 'max:80'],
             'accepts_onsite_visits' => ['nullable', 'boolean'],
             'policies' => ['nullable', 'array'],
