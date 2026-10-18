@@ -155,7 +155,7 @@ export async function pmRecalc() {
         const response = await axios.post('/api/v1/orders/quote', {
             product_id: currentPurchaseProduct.id,
             delivery_type: document.getElementById('pm-dtype')?.value ?? 'CURBSIDE',
-            ...(zip.length === 5 ? { delivery_zip: zip } : {}),
+            ...(/^\d{5}$/.test(zip) ? { delivery_zip: zip } : {}),
         });
 
         currentCheckoutQuote = response.data?.data?.quote ?? null;

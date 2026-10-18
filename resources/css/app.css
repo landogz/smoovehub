@@ -789,7 +789,7 @@
     }
 
     .sh-modal {
-        @apply max-h-[90vh] w-full overflow-y-auto rounded-[20px] border border-sh-s200 bg-white shadow-[0_16px_48px_rgba(15,23,42,0.14)];
+        @apply flex max-h-[min(90vh,720px)] w-full flex-col overflow-hidden rounded-[20px] border border-sh-s200 bg-white shadow-[0_16px_48px_rgba(15,23,42,0.14)];
     }
 
     .sh-modal-hd {
@@ -805,7 +805,11 @@
     }
 
     .sh-modal-body {
-        @apply px-6 py-6;
+        @apply min-h-0 flex-1 overflow-y-auto px-6 py-6;
+    }
+
+    .sh-modal-ft {
+        @apply shrink-0 border-t border-sh-s100 px-6 py-4;
     }
 
     .sh-form-field {
@@ -1660,6 +1664,10 @@ body.sh-modal-active {
     overflow: hidden;
 }
 
+body.sh-modal-active .sh-cookie-bar {
+    @apply hidden;
+}
+
 body.portal {
     @apply bg-sh-s50;
 }
@@ -1736,7 +1744,8 @@ body.portal {
     }
 
     .sh-modal-hd,
-    .sh-modal-body {
+    .sh-modal-body,
+    .sh-modal-ft {
         @apply px-4 py-4;
     }
 

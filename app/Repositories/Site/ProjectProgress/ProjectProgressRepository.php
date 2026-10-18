@@ -205,6 +205,12 @@ class ProjectProgressRepository
             'history' => [
                 [
                     'date' => '2026-10-18',
+                    'title' => 'Checkout Pay Now stays on screen',
+                    'detail' => 'Confirm Purchase keeps Pay Now pinned at the bottom of the modal so the cookie bar no longer covers the button.',
+                    'status' => 'shipped',
+                ],
+                [
+                    'date' => '2026-10-18',
                     'title' => 'OSM address suggestions',
                     'detail' => 'Quote, checkout, member, seller, and Design Me address fields show a dropdown of OSM matches. Geocode is proxied through Laravel; rates still come from CRS.',
                     'status' => 'shipped',

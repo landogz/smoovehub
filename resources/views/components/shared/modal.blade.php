@@ -28,5 +28,11 @@
         <div class="sh-modal-body">
             {{ $slot }}
         </div>
+
+        @isset($footer)
+            <div class="sh-modal-ft">
+                {{ $footer }}
+            </div>
+        @endisset
     </div>
 </div>

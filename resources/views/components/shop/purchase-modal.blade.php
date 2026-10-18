@@ -33,6 +33,8 @@
         </div>
     </div>
 
-    <p class="mb-4 text-[11px] text-sh-s400">🔒 Payment secured by Stripe · 30-day return on new items</p>
-    <button type="button" class="sh-btn sh-btn-orange sh-btn-full sh-btn-lg" data-purchase-submit>Pay Now →</button>
+    <x-slot:footer>
+        <p class="mb-3 text-[11px] text-sh-s400">🔒 Payment secured by Stripe · 30-day return on new items</p>
+        <button type="button" class="sh-btn sh-btn-orange sh-btn-full sh-btn-lg" data-purchase-submit>Pay Now →</button>
+    </x-slot:footer>
 </x-shared.modal>
