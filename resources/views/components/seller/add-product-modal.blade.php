@@ -1,4 +1,5 @@
 <x-shared.modal id="add-product-modal" title="+ Add New Product" maxWidth="max-w-[480px]">
+    <input type="hidden" id="ap-product-id" value="">
     <div id="ap-err" class="sh-form-alert mb-4 hidden" role="alert"></div>
 
     <div class="sh-form-field">

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getCurrentUser, openAuthModal } from '../auth/auth.js';
+import { getCurrentUser, openAuthModal, refreshCurrentUser } from '../auth/auth.js';
 import { restorePortalUser } from '../auth/portal-auth.js';
 import { showToast } from '../landing/toast.js';
 import { formatMoney } from '../prototype/state.js';
@@ -437,6 +437,7 @@ function bindEvents() {
             });
             showToast('Profile saved', 'Your account details were updated.', 'success');
             await loadOverview();
+            await refreshCurrentUser();
         } catch (error) {
             if (!requireAuth(error)) {
                 showToast('Profile not saved', apiError(error, 'Could not save profile.'), 'error');
@@ -458,6 +459,7 @@ function bindEvents() {
             const response = await axios.post('/api/v1/member/avatar', body);
             setAvatar(response.data?.data?.avatar_url, 'M');
             showToast('Photo updated', 'Your profile photo was saved.', 'success');
+            await refreshCurrentUser();
         } catch (error) {
             if (!requireAuth(error)) {
                 showToast('Photo not saved', apiError(error, 'Use a JPEG or PNG under 1 MB.'), 'error');

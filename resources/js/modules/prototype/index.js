@@ -1,5 +1,5 @@
 import { initMemberAccount } from '../member/account.js';
-import { initAddProduct } from './add-product.js';
+import { initAddProduct, openProductEditor } from './add-product.js';
 import { initDashboard, removeProduct, saveSellerSettings } from './dashboard.js';
 import { initDolores } from './dolores.js';
 import { initNotifications } from './notifications.js';
@@ -40,6 +40,10 @@ export function initPrototype() {
     loadCatalog();
 
     updateCartBadge(loadState().cartCount);
+
+    window.addEventListener('smoovehub:edit-product', (event) => {
+        openProductEditor(event.detail?.product);
+    });
 
     window.addEventListener('smoovehub:remove-product', (event) => {
         removeProduct(event.detail?.id);

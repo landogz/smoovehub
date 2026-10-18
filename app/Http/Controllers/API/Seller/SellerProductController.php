@@ -34,6 +34,17 @@ class SellerProductController extends Controller
         ], 201);
     }
 
+    public function update(StoreSellerProductRequest $request, string $uuid): JsonResponse
+    {
+        $product = $this->service->update($request->user(), $uuid, $request->validated(), $request);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Product updated.',
+            'data' => ['product' => $product],
+        ]);
+    }
+
     public function destroy(Request $request, string $uuid): JsonResponse
     {
         $this->service->destroy($request->user(), $uuid, $request);

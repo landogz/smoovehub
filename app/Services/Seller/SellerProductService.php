@@ -28,6 +28,23 @@ class SellerProductService
     }
 
     /**
+     * @param  array<string, mixed>  $payload
+     * @return array<string, mixed>
+     */
+    public function update(User $user, string $uuid, array $payload, Request $request): array
+    {
+        $this->assertSeller($user);
+        $product = $this->repository->updateForUser($user, $uuid, $payload);
+
+        $this->activityLogger->log($user, 'seller.product.updated', 'product', $product['numeric_id'] ?? null, [
+            'product_uuid' => $uuid,
+            'name' => $product['name'] ?? null,
+        ], $request);
+
+        return $product;
+    }
+
+    /**
      * @return array<int, array<string, mixed>>
      */
     public function index(User $user): array

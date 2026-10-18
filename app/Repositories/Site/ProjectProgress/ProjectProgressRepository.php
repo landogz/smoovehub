@@ -51,8 +51,8 @@ class ProjectProgressRepository
                 [
                     'id' => 4,
                     'name' => 'Phase 4 — Seller Dashboard',
-                    'summary' => 'Seller SPA APIs: Overview, Products, Orders, Payouts, Settings, Dist Catalog, Imports, Purchases, Onsite Appts, Open API. Members (shoppers) use /account.',
-                    'status' => 'in_progress',
+                    'summary' => 'Seller SPA APIs: Overview, Products, Orders, Payouts/banks, Vouchers, Settings, Dist Catalog, Imports, Purchases, Onsite Appts, Open API. Members (shoppers) use /account.',
+                    'status' => 'done',
                 ],
                 [
                     'id' => 5,
@@ -161,14 +161,16 @@ class ProjectProgressRepository
                     'auth_status' => 'secured',
                     'data_status' => 'live',
                     'phase_api' => 4,
-                    'notes' => 'Docs §9.2 — seller dashboard tabs on live APIs. Payouts pending Stripe (Phase 3); dist inventory fills in Phase 5.',
+                    'notes' => 'Docs §9.2 — seller dashboard CRUD is live. Request Payout waits on Stripe (Phase 3). Dist catalog Import API is live; SKU data fills in Phase 5.',
                     'modules' => [
                         ['key' => 'overview', 'name' => 'Overview', 'detail' => 'Orders snapshot + activity feed', 'status' => 'production', 'phase' => 4],
                         ['key' => 'products', 'name' => 'Products', 'detail' => 'Listings CRUD + media upload', 'status' => 'production', 'phase' => 4],
-                        ['key' => 'orders', 'name' => 'Orders', 'detail' => 'Customer orders', 'status' => 'production', 'phase' => 4],
-                        ['key' => 'payouts', 'name' => 'Payouts', 'detail' => 'Friday payout policy + bank / Stripe Connect', 'status' => 'production', 'phase' => 4],
-                        ['key' => 'settings', 'name' => 'Settings', 'detail' => 'Store profile + branding', 'status' => 'production', 'phase' => 4],
-                        ['key' => 'distcatalog', 'name' => 'Distribution Catalog', 'detail' => 'Browse / import distributor SKUs', 'status' => 'production', 'phase' => 4],
+                        ['key' => 'orders', 'name' => 'Orders', 'detail' => 'Customer orders with status actions', 'status' => 'production', 'phase' => 4],
+                        ['key' => 'payouts', 'name' => 'Payouts', 'detail' => 'Friday payout copy + last4 bank accounts (Stripe Connect Phase 3)', 'status' => 'production', 'phase' => 4],
+                        ['key' => 'banks', 'name' => 'Bank accounts', 'detail' => 'Seller payout banks stored as last4 metadata only', 'status' => 'production', 'phase' => 4],
+                        ['key' => 'vouchers', 'name' => 'Vouchers', 'detail' => 'Store-scoped coupon CRUD; members redeem on /account', 'status' => 'production', 'phase' => 4],
+                        ['key' => 'settings', 'name' => 'Settings', 'detail' => 'Store profile, location, onsite visits, return/shipping policies', 'status' => 'production', 'phase' => 4],
+                        ['key' => 'distcatalog', 'name' => 'Distribution Catalog', 'detail' => 'Browse / import distributor SKUs (empty until Phase 5 inventory)', 'status' => 'production', 'phase' => 4],
                         ['key' => 'myimports', 'name' => 'My Imports', 'detail' => 'Imported distribution listings', 'status' => 'production', 'phase' => 4],
                         ['key' => 'mypurchases', 'name' => 'My Purchases', 'detail' => 'Distribution purchase history', 'status' => 'production', 'phase' => 4],
                         ['key' => 'onsiteappts', 'name' => 'Onsite Appointments', 'detail' => 'Customer visit requests (not on dist portal)', 'status' => 'production', 'phase' => 4],
@@ -199,6 +201,12 @@ class ProjectProgressRepository
                 ['name' => 'Under Maintenance', 'path' => '/maintenance', 'detail' => 'SITE_MAINTENANCE env toggle; marketplace 503. Client payment + progress stay open.', 'status' => 'production', 'phase' => 9],
             ],
             'history' => [
+                [
+                    'date' => '2026-10-18',
+                    'title' => 'Seller Dashboard complete',
+                    'detail' => 'Phase 4 seller SPA: product edit, order status, full store settings, last4 payout banks, store voucher CRUD, dist import, onsite confirm, Open API token.',
+                    'status' => 'shipped',
+                ],
                 [
                     'date' => '2026-10-18',
                     'title' => 'Shopee-style Member Account',

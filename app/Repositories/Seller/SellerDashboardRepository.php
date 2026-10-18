@@ -2,15 +2,26 @@
 
 namespace App\Repositories\Seller;
 
+use App\Models\Auth\PersonalAccessToken;
+use App\Models\Catalog\Product;
 use App\Models\Distribution\DistributionCatalogImport;
 use App\Models\Distribution\DistributionInventory;
 use App\Models\Order\Order;
 use App\Models\Seller\SellerProfile;
 use App\Models\Tracking\OnsiteVisitAppointment;
 use App\Models\User;
+use App\Services\Platform\MarkupCalculationService;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\NewAccessToken;
 
 class SellerDashboardRepository
 {
+    public function __construct(
+        private readonly MarkupCalculationService $markup,
+        private readonly SellerPayoutAccountRepository $payoutAccounts,
+    ) {}
+
     public function requireProfile(User $user): SellerProfile
     {
         $profile = $user->sellerProfile;
@@ -79,7 +90,8 @@ class SellerDashboardRepository
             'available' => round((float) $paidDelivered->sum('subtotal'), 2),
             'pending' => round((float) $paidPending->sum('subtotal') + (float) $unpaid->sum('subtotal'), 2),
             'total_paid' => round((float) $paidDelivered->sum('subtotal'), 2),
-            'note' => 'Payouts release on CRS delivery confirmation. Stripe Connect ships in Phase 3.',
+            'note' => 'Payouts release Fridays after CRS delivery confirmation. Stripe Connect ships in Phase 3.',
+            'banks' => $this->payoutAccounts->list($profile),
         ];
     }
 
@@ -97,6 +109,11 @@ class SellerDashboardRepository
      */
     public function updateSettings(SellerProfile $profile, User $user, array $payload): array
     {
+        $policies = is_array($profile->policies) ? $profile->policies : [];
+        $incomingPolicies = is_array($payload['policies'] ?? null) ? $payload['policies'] : [];
+        $policies['returns'] = $incomingPolicies['returns'] ?? ($policies['returns'] ?? null);
+        $policies['shipping'] = $incomingPolicies['shipping'] ?? ($policies['shipping'] ?? null);
+
         $profile->update([
             'store_name' => $payload['store_name'],
             'description' => $payload['description'] ?? $profile->description,
@@ -104,6 +121,7 @@ class SellerDashboardRepository
             'state' => $payload['state'] ?? $profile->state,
             'business_type' => $payload['business_type'] ?? $profile->business_type,
             'accepts_onsite_visits' => (bool) ($payload['accepts_onsite_visits'] ?? $profile->accepts_onsite_visits),
+            'policies' => $policies,
         ]);
 
         return $this->storePayload($profile->fresh(), $user);
@@ -138,12 +156,15 @@ class SellerDashboardRepository
     public function imports(SellerProfile $profile): array
     {
         return DistributionCatalogImport::query()
+            ->with(['product', 'inventoryItem'])
             ->where('seller_profile_id', $profile->id)
             ->latest()
             ->get()
             ->map(fn (DistributionCatalogImport $import) => [
                 'id' => $import->uuid,
                 'status' => $import->status,
+                'name' => $import->product?->name ?? $import->inventoryItem?->name ?? 'Imported SKU',
+                'sku' => $import->inventoryItem?->sku,
                 'wholesale_price' => (float) $import->wholesale_price,
                 'resale_price' => (float) $import->resale_price,
                 'imported_at' => optional($import->imported_at)->toDateString(),
@@ -161,12 +182,7 @@ class SellerDashboardRepository
             ->where('seller_profile_id', $profile->id)
             ->latest('scheduled_at')
             ->get()
-            ->map(fn (OnsiteVisitAppointment $appt) => [
-                'id' => $appt->uuid,
-                'status' => $appt->status,
-                'scheduled_at' => optional($appt->scheduled_at)->toIso8601String(),
-                'customer_notes' => $appt->customer_notes,
-            ])
+            ->map(fn (OnsiteVisitAppointment $appt) => $this->onsitePayload($appt))
             ->values()
             ->all();
     }
@@ -174,13 +190,182 @@ class SellerDashboardRepository
     /**
      * @return array<string, mixed>
      */
-    public function openApi(): array
+    /**
+     * @return array<string, mixed>
+     */
+    public function updateOrderStatus(SellerProfile $profile, string $uuid, string $status): array
     {
+        $order = Order::query()
+            ->with('items')
+            ->where('uuid', $uuid)
+            ->where('seller_profile_id', $profile->id)
+            ->first();
+
+        if (! $order) {
+            throw ValidationException::withMessages([
+                'order' => ['Order was not found.'],
+            ]);
+        }
+
+        $order->update([
+            'status' => $status,
+            'delivered_at' => $status === 'delivered' ? now() : $order->delivered_at,
+        ]);
+
+        return $this->orderPayload($order->fresh('items'));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function importDistSku(SellerProfile $profile, string $uuid): array
+    {
+        $item = DistributionInventory::query()
+            ->with('company')
+            ->where('uuid', $uuid)
+            ->where('status', 'active')
+            ->first();
+
+        if (! $item) {
+            throw ValidationException::withMessages([
+                'sku' => ['Distribution SKU was not found.'],
+            ]);
+        }
+
+        $already = DistributionCatalogImport::query()
+            ->where('seller_profile_id', $profile->id)
+            ->where('distribution_inventory_id', $item->id)
+            ->first();
+
+        if ($already) {
+            throw ValidationException::withMessages([
+                'sku' => ['This SKU is already in your import list.'],
+            ]);
+        }
+
+        $wholesale = (float) $item->internal_reseller_price;
+        $condition = $item->condition ?: 'BRAND_NEW';
+        $listingPrice = $this->markup->listingPrice('distribution', $condition, $wholesale);
+        $slug = $this->uniqueProductSlug(Str::slug($item->name.'-'.$profile->id));
+
+        $product = Product::query()->create([
+            'seller_profile_id' => $profile->id,
+            'distribution_inventory_id' => $item->id,
+            'category_id' => $item->category_id,
+            'sku' => $item->sku,
+            'name' => $item->name,
+            'slug' => $slug,
+            'description' => $item->description,
+            'condition' => $condition,
+            'internal_price' => $wholesale,
+            'listing_price' => $listingPrice,
+            'compare_at_price' => $listingPrice,
+            'quantity' => max(1, (int) $item->quantity),
+            'ownership_type' => 'distribution',
+            'status' => 'active',
+            'seo_meta' => ['icon' => '🏭', 'imported' => true],
+        ]);
+
+        $profile->increment('product_count');
+
+        $import = DistributionCatalogImport::query()->create([
+            'seller_profile_id' => $profile->id,
+            'distribution_company_id' => $item->distribution_company_id,
+            'distribution_inventory_id' => $item->id,
+            'product_id' => $product->id,
+            'wholesale_price' => $wholesale,
+            'resale_price' => $listingPrice,
+            'status' => 'imported',
+            'imported_at' => now(),
+        ]);
+
         return [
-            'key_preview' => 'sh_live_••••••••••••••••',
-            'status' => 'pending',
-            'message' => 'Seller API keys stay masked until Open API provisioning ships with inventory sync.',
+            'import' => [
+                'id' => $import->uuid,
+                'status' => $import->status,
+                'name' => $product->name,
+                'sku' => $item->sku,
+                'wholesale_price' => $wholesale,
+                'resale_price' => $listingPrice,
+                'imported_at' => $import->imported_at?->toDateString(),
+            ],
+            'product' => [
+                'id' => $product->uuid,
+                'name' => $product->name,
+            ],
         ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     * @return array<string, mixed>
+     */
+    public function updateOnsite(SellerProfile $profile, string $uuid, array $payload): array
+    {
+        $appt = OnsiteVisitAppointment::query()
+            ->where('uuid', $uuid)
+            ->where('seller_profile_id', $profile->id)
+            ->first();
+
+        if (! $appt) {
+            throw ValidationException::withMessages([
+                'appointment' => ['Visit request was not found.'],
+            ]);
+        }
+
+        $appt->update([
+            'status' => $payload['status'],
+            'seller_notes' => $payload['seller_notes'] ?? $appt->seller_notes,
+        ]);
+
+        return $this->onsitePayload($appt->fresh());
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function openApi(User $user): array
+    {
+        $token = $user->tokens()->where('name', 'seller-open-api')->latest()->first();
+
+        return [
+            'has_token' => (bool) $token,
+            'key_preview' => $token ? 'sh_live_••••••••'.$this->tokenMask($token) : null,
+            'status' => $token ? 'active' : 'inactive',
+            'last_used_at' => $token?->last_used_at?->toIso8601String(),
+            'message' => $token
+                ? 'Your Open API key is active. The full key is shown only when generated.'
+                : 'Generate a store API token for inventory sync. The plain key is shown once.',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function issueOpenApiToken(User $user): array
+    {
+        $user->tokens()->where('name', 'seller-open-api')->delete();
+
+        /** @var NewAccessToken $token */
+        $token = $user->createToken('seller-open-api', ['seller:open-api']);
+
+        return [
+            'token' => $token->plainTextToken,
+            'key_preview' => 'sh_live_••••••••'.substr($token->accessToken->uuid ?? '', -4),
+            'status' => 'active',
+            'has_token' => true,
+            'message' => 'Copy this key now. It will not be shown again.',
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function revokeOpenApiToken(User $user): array
+    {
+        $user->tokens()->where('name', 'seller-open-api')->delete();
+
+        return $this->openApi($user);
     }
 
     /**
@@ -199,6 +384,10 @@ class SellerDashboardRepository
             'rating' => (float) ($profile->rating_avg ?? 0),
             'accepts_onsite_visits' => (bool) $profile->accepts_onsite_visits,
             'verified' => $profile->verification_status === 'verified',
+            'policies' => [
+                'returns' => is_array($profile->policies) ? ($profile->policies['returns'] ?? '') : '',
+                'shipping' => is_array($profile->policies) ? ($profile->policies['shipping'] ?? '') : '',
+            ],
         ];
     }
 
@@ -221,5 +410,39 @@ class SellerDashboardRepository
             'date' => $order->created_at?->timezone(config('app.timezone'))->format('M j, Y'),
             'delivery_zip' => is_array($notes) ? ($notes['delivery_zip'] ?? null) : null,
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function onsitePayload(OnsiteVisitAppointment $appt): array
+    {
+        return [
+            'id' => $appt->uuid,
+            'status' => $appt->status,
+            'scheduled_at' => optional($appt->scheduled_at)->toIso8601String(),
+            'customer_notes' => $appt->customer_notes,
+            'seller_notes' => $appt->seller_notes,
+        ];
+    }
+
+    private function uniqueProductSlug(string $base): string
+    {
+        $slug = $base !== '' ? $base : 'imported-product';
+        $counter = 1;
+
+        while (Product::query()->where('slug', $slug)->exists()) {
+            $slug = $base.'-'.$counter;
+            $counter++;
+        }
+
+        return $slug;
+    }
+
+    private function tokenMask(?PersonalAccessToken $token): string
+    {
+        $uuid = (string) ($token?->uuid ?? '');
+
+        return $uuid !== '' ? substr($uuid, -4) : 'key';
     }
 }

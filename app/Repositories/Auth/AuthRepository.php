@@ -7,6 +7,7 @@ use App\Models\Auth\UserDevice;
 use App\Models\Platform\ActivityLog;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class AuthRepository
@@ -167,12 +168,14 @@ class AuthRepository
         $payload = [
             'uuid' => $user->uuid,
             'name' => $user->name,
+            'username' => $user->username,
             'email' => $user->email,
             'phone' => $user->phone,
             'status' => $user->status,
             'roles' => $roles,
             'primary_role' => $primaryRole,
             'avatar_initials' => $this->initials($user->name),
+            'avatar_url' => $user->avatar_path ? Storage::disk('public')->url($user->avatar_path) : null,
             'last_login_at' => $user->last_login_at?->toIso8601String(),
         ];
 

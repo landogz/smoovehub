@@ -76,6 +76,59 @@ class SellerProductRepository
     }
 
     /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public function updateForUser(User $user, string $uuid, array $data): array
+    {
+        $profile = $this->requireProfile($user);
+        $product = $this->findOwned($profile, $uuid);
+
+        $basePrice = (float) $data['base_price'];
+        $listingPrice = $this->markup->listingPrice('seller', (string) $data['condition'], $basePrice);
+        $categorySlug = strtolower((string) $data['category']);
+        $categoryId = Category::query()->where('slug', $categorySlug)->value('id');
+        $seo = is_array($product->seo_meta) ? $product->seo_meta : [];
+        $icons = [
+            'COMMERCIAL' => '🏢',
+            'RESIDENTIAL' => '🛋️',
+            'APPLIANCES' => '🔌',
+        ];
+        $seo['icon'] = $icons[$data['category']] ?? ($seo['icon'] ?? '🛋️');
+
+        $product->update([
+            'category_id' => $categoryId,
+            'name' => $data['name'],
+            'description' => $data['description'] ?? null,
+            'condition' => $data['condition'],
+            'internal_price' => $basePrice,
+            'listing_price' => $listingPrice,
+            'compare_at_price' => $listingPrice,
+            'quantity' => $data['quantity'],
+            'same_day_delivery' => (bool) ($data['same_day_delivery'] ?? false),
+            'seo_meta' => $seo,
+        ]);
+
+        return $this->toCard($product->fresh('category'), $profile);
+    }
+
+    public function findOwned(SellerProfile $profile, string $uuid): Product
+    {
+        $product = Product::query()
+            ->where('uuid', $uuid)
+            ->where('seller_profile_id', $profile->id)
+            ->first();
+
+        if (! $product) {
+            throw ValidationException::withMessages([
+                'product_id' => ['Product was not found.'],
+            ]);
+        }
+
+        return $product;
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function destroyForUser(User $user, string $uuid): array
@@ -126,6 +179,7 @@ class SellerProductRepository
             'id' => $product->uuid,
             'numeric_id' => $product->id,
             'name' => $product->name,
+            'description' => $product->description,
             'price' => (float) $product->listing_price,
             'original' => (float) ($product->internal_price ?? 0),
             'seller' => $profile->store_name,

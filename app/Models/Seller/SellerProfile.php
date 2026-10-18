@@ -5,6 +5,7 @@ namespace App\Models\Seller;
 use App\Models\Catalog\Product;
 use App\Models\Concerns\HasUuid;
 use App\Models\Distribution\DistributionCatalogImport;
+use App\Models\Member\Voucher;
 use App\Models\Tracking\OnsiteVisitAppointment;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -68,5 +69,15 @@ class SellerProfile extends Model
     public function onsiteAppointments(): HasMany
     {
         return $this->hasMany(OnsiteVisitAppointment::class);
+    }
+
+    public function payoutAccounts(): HasMany
+    {
+        return $this->hasMany(SellerPayoutAccount::class);
+    }
+
+    public function vouchers(): HasMany
+    {
+        return $this->hasMany(Voucher::class);
     }
 }

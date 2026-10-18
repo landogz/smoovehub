@@ -133,6 +133,29 @@ function displayRoleLabel(user) {
     return role.replace(/-/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
+function displayNavName(user) {
+    if (userHasRole(user, 'seller') && user.seller_profile?.store_name) {
+        return user.seller_profile.store_name;
+    }
+
+    return user.username || user.name || 'Member';
+}
+
+function renderNavAvatar(avatar, user) {
+    if (!avatar) {
+        return;
+    }
+
+    const initials = user?.avatar_initials ?? 'U';
+
+    if (user?.avatar_url) {
+        avatar.innerHTML = `<img src="${user.avatar_url}" alt="" class="h-full w-full object-cover">`;
+        return;
+    }
+
+    avatar.textContent = initials;
+}
+
 function updateNavbar(user) {
     const guest = document.getElementById('nav-guest');
     const userNav = document.getElementById('nav-user');
@@ -155,11 +178,13 @@ function updateNavbar(user) {
     mobileUser?.classList.toggle('flex', isLoggedIn);
 
     if (user && avatar) {
-        avatar.textContent = user.avatar_initials ?? 'U';
+        renderNavAvatar(avatar, user);
+    } else if (avatar) {
+        avatar.textContent = 'U';
     }
 
     if (user && name) {
-        name.textContent = user.seller_profile?.store_name ?? user.name;
+        name.textContent = displayNavName(user);
     }
 
     if (user && role) {
@@ -399,6 +424,14 @@ export function initAuth() {
     initModalLinks();
     initUserMenu();
     restoreSession();
+}
+
+export async function refreshCurrentUser() {
+    try {
+        return await fetchCurrentUser();
+    } catch {
+        return getCurrentUser();
+    }
 }
 
 export function getCurrentUser() {

@@ -23,6 +23,9 @@ class UpdateSellerSettingsRequest extends FormRequest
             'state' => ['nullable', 'string', 'max:40'],
             'business_type' => ['nullable', 'string', 'max:80'],
             'accepts_onsite_visits' => ['nullable', 'boolean'],
+            'policies' => ['nullable', 'array'],
+            'policies.returns' => ['nullable', 'string', 'max:4000'],
+            'policies.shipping' => ['nullable', 'string', 'max:4000'],
         ];
     }
 }

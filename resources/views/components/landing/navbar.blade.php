@@ -100,7 +100,7 @@
                         aria-expanded="false"
                         aria-controls="nav-user-menu"
                     >
-                        <span id="nav-user-avatar" class="flex h-8 w-8 items-center justify-center rounded-full bg-sh-blue text-xs font-bold text-white">U</span>
+                        <span id="nav-user-avatar" class="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-sh-blue text-xs font-bold text-white">U</span>
                         <span class="hidden min-w-0 text-left lg:block">
                             <span id="nav-user-name" class="block max-w-[120px] truncate text-[13px] font-semibold text-sh-s900">User</span>
                             <span id="nav-user-role" class="block text-[11px] text-sh-s500">Customer</span>

@@ -3,8 +3,10 @@
 namespace App\Models\Member;
 
 use App\Models\Concerns\HasUuid;
+use App\Models\Seller\SellerProfile;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Voucher extends Model
@@ -13,6 +15,7 @@ class Voucher extends Model
 
     protected $fillable = [
         'uuid',
+        'seller_profile_id',
         'code',
         'title',
         'type',
@@ -29,6 +32,11 @@ class Voucher extends Model
             'min_spend' => 'decimal:2',
             'expires_at' => 'datetime',
         ];
+    }
+
+    public function sellerProfile(): BelongsTo
+    {
+        return $this->belongsTo(SellerProfile::class);
     }
 
     public function members(): BelongsToMany

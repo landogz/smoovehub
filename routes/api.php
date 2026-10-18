@@ -76,16 +76,29 @@ Route::prefix('v1')->group(function (): void {
     Route::prefix('seller')->middleware(['auth:sanctum', 'role:seller', 'throttle:api'])->group(function (): void {
         Route::get('/dashboard', [SellerDashboardController::class, 'overview'])->name('api.seller.dashboard');
         Route::get('/orders', [SellerDashboardController::class, 'orders'])->name('api.seller.orders');
+        Route::patch('/orders/{uuid}', [SellerDashboardController::class, 'updateOrder'])->name('api.seller.orders.update');
         Route::get('/payouts', [SellerDashboardController::class, 'payouts'])->name('api.seller.payouts');
+        Route::post('/payout-accounts', [SellerDashboardController::class, 'storePayoutAccount'])->name('api.seller.payout-accounts.store');
+        Route::delete('/payout-accounts/{uuid}', [SellerDashboardController::class, 'destroyPayoutAccount'])->name('api.seller.payout-accounts.destroy');
+        Route::post('/payout-accounts/{uuid}/default', [SellerDashboardController::class, 'defaultPayoutAccount'])->name('api.seller.payout-accounts.default');
+        Route::get('/vouchers', [SellerDashboardController::class, 'vouchers'])->name('api.seller.vouchers.index');
+        Route::post('/vouchers', [SellerDashboardController::class, 'storeVoucher'])->name('api.seller.vouchers.store');
+        Route::put('/vouchers/{uuid}', [SellerDashboardController::class, 'updateVoucher'])->name('api.seller.vouchers.update');
+        Route::delete('/vouchers/{uuid}', [SellerDashboardController::class, 'destroyVoucher'])->name('api.seller.vouchers.destroy');
         Route::get('/settings', [SellerDashboardController::class, 'settings'])->name('api.seller.settings.show');
         Route::put('/settings', [SellerDashboardController::class, 'updateSettings'])->name('api.seller.settings.update');
         Route::get('/dist-catalog', [SellerDashboardController::class, 'distCatalog'])->name('api.seller.dist-catalog');
+        Route::post('/dist-catalog/{uuid}/import', [SellerDashboardController::class, 'importDistSku'])->name('api.seller.dist-catalog.import');
         Route::get('/imports', [SellerDashboardController::class, 'imports'])->name('api.seller.imports');
         Route::get('/purchases', [SellerDashboardController::class, 'purchases'])->name('api.seller.purchases');
         Route::get('/onsite-appointments', [SellerDashboardController::class, 'onsiteAppointments'])->name('api.seller.onsite');
+        Route::patch('/onsite-appointments/{uuid}', [SellerDashboardController::class, 'updateOnsite'])->name('api.seller.onsite.update');
         Route::get('/open-api', [SellerDashboardController::class, 'openApi'])->name('api.seller.open-api');
+        Route::post('/open-api/token', [SellerDashboardController::class, 'issueOpenApiToken'])->name('api.seller.open-api.token');
+        Route::delete('/open-api/token', [SellerDashboardController::class, 'revokeOpenApiToken'])->name('api.seller.open-api.revoke');
         Route::get('/products', [SellerProductController::class, 'index'])->name('api.seller.products.index');
         Route::post('/products', [SellerProductController::class, 'store'])->name('api.seller.products.store');
+        Route::put('/products/{uuid}', [SellerProductController::class, 'update'])->name('api.seller.products.update');
         Route::delete('/products/{uuid}', [SellerProductController::class, 'destroy'])->name('api.seller.products.destroy');
     });
 
