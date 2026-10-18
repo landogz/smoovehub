@@ -200,8 +200,15 @@ class ProjectProgressRepository
                 ['name' => 'Payout Split Engine', 'path' => '(webhooks)', 'detail' => 'Seller + distributor + CRS fee on DELIVERED', 'status' => 'upcoming', 'phase' => 5],
                 ['name' => 'Under Maintenance', 'path' => '/maintenance', 'detail' => 'SITE_MAINTENANCE env toggle; marketplace 503. Client payment + progress stay open.', 'status' => 'production', 'phase' => 9],
                 ['name' => '404 Not Found', 'path' => '(unknown URLs)', 'detail' => 'Branded public error page with home, shop, quote, and contact links', 'status' => 'production', 'phase' => 9],
+                ['name' => 'Address Suggest', 'path' => '(quote · shop · account)', 'detail' => 'OSM/Photon typeahead on ZIP and address fields; MapLibre for future map pins', 'status' => 'production', 'phase' => 7],
             ],
             'history' => [
+                [
+                    'date' => '2026-10-18',
+                    'title' => 'OSM address suggestions',
+                    'detail' => 'Quote, checkout, member, seller, and Design Me address fields show a dropdown of OSM matches. Geocode is proxied through Laravel; rates still come from CRS.',
+                    'status' => 'shipped',
+                ],
                 [
                     'date' => '2026-10-18',
                     'title' => 'Branded 404 page',

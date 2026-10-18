@@ -1,3 +1,4 @@
+import { initAddressSuggest } from './address-suggest.js';
 import { initAdminPortal } from './admin-portal.js';
 import { initContactPage } from './contact-page.js';
 import { initDesignMe } from './design-me.js';
@@ -70,6 +71,7 @@ function initAdminPortalPage() {
 }
 
 export function initSiteForms() {
+    initAddressSuggest();
     initContactForm();
     initQuoteForm();
     initDriverForm();

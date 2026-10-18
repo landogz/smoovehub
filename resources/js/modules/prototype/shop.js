@@ -308,17 +308,13 @@ export function initShopPage() {
 
     document.getElementById('shop-sort')?.addEventListener('change', () => refreshShopGrid(conditionLabels));
 
-    document.querySelectorAll('[data-pm-recalc]').forEach((el) => {
-        el.addEventListener('input', pmRecalc);
-        el.addEventListener('change', pmRecalc);
-    });
-
-    document.querySelector('[data-purchase-submit]')?.addEventListener('click', completePurchase);
-
+    initPurchaseModal();
     updateCartBadge(loadState().cartCount);
 }
 
 export function initFeaturedPurchaseCards() {
+    initPurchaseModal();
+
     document.body.addEventListener('click', (event) => {
         const card = event.target.closest('[data-purchase-id]');
 
@@ -326,6 +322,21 @@ export function initFeaturedPurchaseCards() {
             openPurchase(card.dataset.purchaseId);
         }
     });
+}
+
+function initPurchaseModal() {
+    if (document.body.dataset.pmBound === '1') {
+        return;
+    }
+
+    document.body.dataset.pmBound = '1';
+
+    document.querySelectorAll('[data-pm-recalc]').forEach((el) => {
+        el.addEventListener('input', pmRecalc);
+        el.addEventListener('change', pmRecalc);
+    });
+
+    document.querySelector('[data-purchase-submit]')?.addEventListener('click', completePurchase);
 }
 
 export async function loadCatalog() {

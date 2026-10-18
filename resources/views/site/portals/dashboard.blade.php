@@ -317,19 +317,19 @@
                                 </div>
                                 <div class="sh-form-field mb-0 sm:col-span-2">
                                     <label class="sh-form-label" for="set-street">Street</label>
-                                    <input id="set-street" class="sh-form-input" type="text" placeholder="123 Warehouse Ave">
+                                    <input id="set-street" class="sh-form-input" type="text" placeholder="123 Warehouse Ave" data-address-suggest data-suggest-line1="set-street" data-suggest-city="set-city" data-suggest-state="set-state" data-suggest-zip="set-zip">
                                 </div>
                                 <div class="sh-form-field mb-0">
                                     <label class="sh-form-label" for="set-city">City</label>
-                                    <input id="set-city" class="sh-form-input" type="text" placeholder="Dallas">
+                                    <input id="set-city" class="sh-form-input" type="text" placeholder="Dallas" data-address-suggest data-suggest-city="set-city" data-suggest-state="set-state" data-suggest-zip="set-zip">
                                 </div>
                                 <div class="sh-form-field mb-0">
                                     <label class="sh-form-label" for="set-state">State</label>
-                                    <input id="set-state" class="sh-form-input" type="text" maxlength="40" placeholder="TX">
+                                    <input id="set-state" class="sh-form-input" type="text" maxlength="40" placeholder="TX" data-address-suggest data-suggest-city="set-city" data-suggest-state="set-state" data-suggest-zip="set-zip">
                                 </div>
                                 <div class="sh-form-field mb-0">
                                     <label class="sh-form-label" for="set-zip">Pickup ZIP</label>
-                                    <input id="set-zip" class="sh-form-input" type="text" maxlength="10" placeholder="75201">
+                                    <input id="set-zip" class="sh-form-input" type="text" placeholder="75201" data-address-suggest data-suggest-city="set-city" data-suggest-state="set-state" data-suggest-zip="set-zip">
                                 </div>
                                 <div class="sh-form-field mb-0">
                                     <label class="sh-form-label" for="set-business-type">Business type</label>

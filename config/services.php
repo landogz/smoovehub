@@ -42,4 +42,10 @@ return [
         'cache_seconds' => (int) env('CRS_RATES_CACHE', 3600),
     ],
 
+    'photon' => [
+        'url' => env('PHOTON_URL', 'https://photon.komoot.io'),
+        'timeout' => (int) env('PHOTON_TIMEOUT', 4),
+        'cache_seconds' => (int) env('PHOTON_CACHE', 3600),
+    ],
+
 ];

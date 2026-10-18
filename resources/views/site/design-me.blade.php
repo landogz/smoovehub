@@ -269,7 +269,7 @@
                             </div>
                             <div class="sh-form-field">
                                 <label class="sh-form-label" for="dm-address">Delivery Address <span class="text-red-500">*</span></label>
-                                <input class="sh-form-input" id="dm-address" type="text" placeholder="1234 Main St, City, State ZIP">
+                                <input class="sh-form-input" id="dm-address" type="text" placeholder="1234 Main St, City, State ZIP" data-address-suggest data-suggest-full="dm-address">
                             </div>
                             <div class="sh-form-field mb-0">
                                 <label class="sh-form-label" for="dm-source">How did you hear about us?</label>

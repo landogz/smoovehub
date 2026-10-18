@@ -51,11 +51,11 @@
                             <div class="mb-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                                 <div>
                                     <label class="sh-quote-label" for="q-fz">Pickup ZIP <span class="text-red-600">*</span></label>
-                                    <input id="q-fz" class="sh-quote-input sh-quote-input-zip" type="text" maxlength="5" placeholder="75201" inputmode="numeric">
+                                    <input id="q-fz" class="sh-quote-input sh-quote-input-zip" type="text" placeholder="75201 or Dallas" data-address-suggest data-suggest-zip="q-fz">
                                 </div>
                                 <div>
                                     <label class="sh-quote-label" for="q-tz">Delivery ZIP <span class="text-red-600">*</span></label>
-                                    <input id="q-tz" class="sh-quote-input sh-quote-input-zip" type="text" maxlength="5" placeholder="75205" inputmode="numeric">
+                                    <input id="q-tz" class="sh-quote-input sh-quote-input-zip" type="text" placeholder="75205 or Dallas" data-address-suggest data-suggest-zip="q-tz">
                                 </div>
                             </div>
 

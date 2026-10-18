@@ -14,6 +14,7 @@ use App\Http\Controllers\API\Member\MemberPaymentMethodController;
 use App\Http\Controllers\API\Member\MemberVoucherController;
 use App\Http\Controllers\API\Seller\SellerDashboardController;
 use App\Http\Controllers\API\Seller\SellerProductController;
+use App\Http\Controllers\API\Site\AddressSuggestController;
 use App\Http\Controllers\API\Site\SiteFormController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,10 @@ Route::prefix('v1')->group(function (): void {
 
     Route::post('/landing/newsletter', [LandingPageController::class, 'subscribeNewsletter'])
         ->name('api.landing.newsletter');
+
+    Route::get('/site/address-suggest', AddressSuggestController::class)
+        ->middleware('throttle:address-suggest')
+        ->name('api.site.address-suggest');
 
     Route::post('/site/contact', [SiteFormController::class, 'contact'])->name('api.site.contact');
     Route::post('/site/driver-application', [SiteFormController::class, 'driverApplication'])->name('api.site.driver');

@@ -315,12 +315,8 @@ export function initQuoteWizard() {
     });
 
     document.getElementById('q-dh')?.addEventListener('input', qLiveCalc);
-    document.getElementById('q-fz')?.addEventListener('input', (event) => {
-        event.target.value = event.target.value.replace(/\D/g, '').slice(0, 5);
-    });
-    document.getElementById('q-tz')?.addEventListener('input', (event) => {
-        event.target.value = event.target.value.replace(/\D/g, '').slice(0, 5);
-    });
+    document.getElementById('q-fz')?.addEventListener('input', qLiveCalc);
+    document.getElementById('q-tz')?.addEventListener('input', qLiveCalc);
 
     ['q-fl', 'q-st', 'q-ef', 'q-ev', 'q-carry', 'q-wt', 'q-pc'].forEach((id) => {
         document.getElementById(id)?.addEventListener('input', qLiveCalc);

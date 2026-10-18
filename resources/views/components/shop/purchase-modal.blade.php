@@ -3,12 +3,12 @@
 
     <div class="sh-form-field">
         <label class="sh-form-label" for="pm-addr">Delivery address<span class="text-red-500">*</span></label>
-        <input id="pm-addr" class="sh-form-input" type="text" placeholder="123 Main St, Dallas, TX 75201" data-modal-focus>
+        <input id="pm-addr" class="sh-form-input" type="text" placeholder="123 Main St, Dallas, TX 75201" data-modal-focus data-address-suggest data-suggest-full="pm-addr" data-suggest-zip="pm-zip">
     </div>
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div class="sh-form-field mb-0">
             <label class="sh-form-label" for="pm-zip">Delivery ZIP<span class="text-red-500">*</span></label>
-            <input id="pm-zip" class="sh-form-input" type="text" maxlength="5" placeholder="75201" data-pm-recalc>
+            <input id="pm-zip" class="sh-form-input" type="text" placeholder="75201" data-pm-recalc data-address-suggest data-suggest-zip="pm-zip">
         </div>
         <div class="sh-form-field mb-0">
             <label class="sh-form-label" for="pm-dtype">Delivery type</label>

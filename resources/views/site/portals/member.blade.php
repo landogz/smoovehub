@@ -222,14 +222,14 @@
             <input type="hidden" name="uuid" id="address-uuid">
             <input id="address-recipient" name="recipient_name" class="sh-form-input" placeholder="Recipient name" required>
             <input id="address-phone" name="phone" class="sh-form-input" placeholder="Phone" required>
-            <input id="address-line1" name="line1" class="sh-form-input" placeholder="Street address" required>
+            <input id="address-line1" name="line1" class="sh-form-input" placeholder="Street address" required data-address-suggest data-suggest-line1="address-line1" data-suggest-city="address-city" data-suggest-state="address-state" data-suggest-zip="address-zip">
             <input id="address-line2" name="line2" class="sh-form-input" placeholder="Apt, suite (optional)">
             <div class="grid grid-cols-2 gap-3">
-                <input id="address-city" name="city" class="sh-form-input" placeholder="City" required>
-                <input id="address-state" name="state" class="sh-form-input" placeholder="State" required>
+                <input id="address-city" name="city" class="sh-form-input" placeholder="City" required data-address-suggest data-suggest-city="address-city" data-suggest-state="address-state" data-suggest-zip="address-zip">
+                <input id="address-state" name="state" class="sh-form-input" placeholder="State" required data-address-suggest data-suggest-city="address-city" data-suggest-state="address-state" data-suggest-zip="address-zip">
             </div>
             <div class="grid grid-cols-2 gap-3">
-                <input id="address-zip" name="zip" class="sh-form-input" placeholder="ZIP" required>
+                <input id="address-zip" name="zip" class="sh-form-input" placeholder="ZIP" required data-address-suggest data-suggest-city="address-city" data-suggest-state="address-state" data-suggest-zip="address-zip">
                 <input id="address-label" name="label" class="sh-form-input" placeholder="Label (Home)">
             </div>
             <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="is_default" id="address-default"> Set as default</label>
