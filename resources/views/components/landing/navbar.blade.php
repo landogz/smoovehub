@@ -110,13 +110,13 @@
                         </svg>
                     </button>
 
-                    <div id="nav-user-menu" class="absolute right-0 top-[calc(100%+8px)] z-[350] hidden min-w-[220px] overflow-hidden rounded-[14px] border border-sh-s200 bg-white shadow-[0_16px_48px_rgba(15,23,42,0.14)]">
-                        <a id="nav-link-account" href="{{ route('site.account') }}" class="hidden px-4 py-3 text-[13px] font-medium text-sh-s700 hover:bg-sh-s50">My Account</a>
-                        <a id="nav-link-seller" href="{{ route('site.dashboard') }}" class="hidden px-4 py-3 text-[13px] font-medium text-sh-s700 hover:bg-sh-s50">Seller Dashboard</a>
-                        <button type="button" class="block w-full px-4 py-3 text-left text-[13px] font-medium text-sh-s700 hover:bg-sh-s50" data-auth-logout-other-devices>
+                    <div id="nav-user-menu" class="absolute right-0 top-[calc(100%+8px)] z-[350] hidden min-w-[220px] overflow-hidden rounded-[14px] border border-sh-s200 bg-white py-1 shadow-[0_16px_48px_rgba(15,23,42,0.14)]">
+                        <a id="nav-link-account" href="{{ route('site.account') }}" class="sh-nav-user-item hidden">My Account</a>
+                        <a id="nav-link-seller" href="{{ route('site.dashboard') }}" class="sh-nav-user-item hidden">Seller Dashboard</a>
+                        <button type="button" class="sh-nav-user-item" data-auth-logout-other-devices>
                             Sign out other devices
                         </button>
-                        <button type="button" class="block w-full border-t border-sh-s100 px-4 py-3 text-left text-[13px] font-medium text-red-600 hover:bg-red-50" data-auth-logout>
+                        <button type="button" class="sh-nav-user-item sh-nav-user-item-danger" data-auth-logout>
                             Sign out
                         </button>
                     </div>

@@ -286,6 +286,14 @@
         @apply block px-4 py-2.5 text-[13px] font-semibold transition-colors hover:bg-sh-s50;
     }
 
+    .sh-nav-user-item {
+        @apply block w-full px-4 py-3 text-left text-[13px] font-medium text-sh-s700 no-underline transition-colors hover:bg-sh-s50 focus-visible:bg-sh-s50 focus-visible:outline-none;
+    }
+
+    .sh-nav-user-item-danger {
+        @apply border-t border-sh-s100 text-red-600 hover:bg-red-50 focus-visible:bg-red-50;
+    }
+
     .sh-nav-dropdown-item-purple {
         @apply text-violet-600;
     }

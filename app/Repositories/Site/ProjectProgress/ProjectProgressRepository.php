@@ -203,6 +203,12 @@ class ProjectProgressRepository
             'history' => [
                 [
                     'date' => '2026-10-18',
+                    'title' => 'Seller dashboard requires login',
+                    'detail' => 'Guests and shoppers who open /dashboard are sent home. Only signed-in sellers can load the seller SPA.',
+                    'status' => 'shipped',
+                ],
+                [
+                    'date' => '2026-10-18',
                     'title' => 'Seller store branding',
                     'detail' => 'Settings now uploads a store logo, phone, pickup ZIP, and street. Logo and live profile overlay the public /store and /sellers pages.',
                     'status' => 'shipped',

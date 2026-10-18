@@ -193,10 +193,9 @@ function updateNavbar(user) {
 
     const isMember = userHasRole(user, 'customer');
     const isSeller = userHasRole(user, 'seller');
-    document.getElementById('nav-link-account')?.classList.toggle('hidden', !isMember);
-    document.getElementById('nav-link-account')?.classList.toggle('block', isMember);
+    toggleNavMenuLink('nav-link-account', isMember);
+    toggleNavMenuLink('nav-link-seller', isSeller);
     document.getElementById('nav-link-account-mobile')?.classList.toggle('hidden', !isMember);
-    document.getElementById('nav-link-seller')?.classList.toggle('hidden', !isSeller);
     document.getElementById('nav-link-seller-mobile')?.classList.toggle('hidden', !isSeller);
 
     document.getElementById('nav-notifications')?.classList.toggle('hidden', !isLoggedIn);
@@ -360,6 +359,10 @@ function initLogoutActions() {
                 currentUser = null;
                 updateNavbar(null);
                 showToast('Signed out', 'See you next time!', 'success');
+
+                if (window.location.pathname.startsWith('/dashboard')) {
+                    window.location.replace('/');
+                }
             }
         });
     });
@@ -393,6 +396,17 @@ function initModalLinks() {
             }
         });
     });
+}
+
+function toggleNavMenuLink(id, visible) {
+    const link = document.getElementById(id);
+
+    if (!link) {
+        return;
+    }
+
+    link.classList.toggle('hidden', !visible);
+    link.classList.toggle('block', visible);
 }
 
 function initUserMenu() {

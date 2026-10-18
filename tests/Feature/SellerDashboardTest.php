@@ -192,6 +192,29 @@ class SellerDashboardTest extends TestCase
             ->assertJsonPath('data.vouchers', []);
     }
 
+    public function test_guest_is_redirected_from_dashboard_page(): void
+    {
+        $this->get('/dashboard')->assertRedirect(route('site.home'));
+        $this->get('/dashboard#overview')->assertRedirect(route('site.home'));
+    }
+
+    public function test_member_is_redirected_from_dashboard_page(): void
+    {
+        $this->seed([SmooveHubDatabaseSeeder::class, DemoUsersSeeder::class]);
+        $member = User::query()->where('email', 'member@smoovehub.com')->firstOrFail();
+
+        $this->actingAs($member)
+            ->get('/dashboard')
+            ->assertRedirect(route('site.home'));
+    }
+
+    public function test_seller_can_open_dashboard_page(): void
+    {
+        $this->actingAs($this->demoSeller())
+            ->get('/dashboard')
+            ->assertOk();
+    }
+
     public function test_guest_cannot_open_seller_apis(): void
     {
         $this->getJson('/api/v1/seller/dashboard')->assertUnauthorized();

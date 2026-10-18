@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { closeModal, openModal } from '../../shared/modal.js';
-import { getCurrentUser, openAuthModal } from '../auth/auth.js';
+import { getCurrentUser } from '../auth/auth.js';
 import { portalLogout, restorePortalUser, userHasAnyRole } from '../auth/portal-auth.js';
 import { showToast } from '../landing/toast.js';
 import { CONDITION_LABELS, formatMoney } from './state.js';
@@ -1026,8 +1026,8 @@ export function initDashboard() {
 
     Promise.resolve(restorePortalUser()).then((user) => {
         if (!userHasAnyRole(user || getCurrentUser(), ['seller'])) {
-            showToast('Seller sign-in required', 'Sign in with a seller account to use the dashboard.', 'warn');
-            openAuthModal('login');
+            window.location.replace('/');
+            return;
         }
 
         refreshDashboard();

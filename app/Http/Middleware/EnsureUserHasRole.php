@@ -24,7 +24,11 @@ class EnsureUserHasRole
                 ], 401);
             }
 
-            // Allow SPA portal shells to load; JS unlocks content after Sanctum login.
+            if ($request->routeIs('site.dashboard')) {
+                return redirect()->route('site.home');
+            }
+
+            // Admin and distribute still load a login overlay for guests.
             $request->attributes->set('portal_guest', true);
 
             return $next($request);
@@ -46,6 +50,10 @@ class EnsureUserHasRole
                     'message' => 'You do not have access to this portal.',
                     'errors' => [],
                 ], 403);
+            }
+
+            if ($request->routeIs('site.dashboard')) {
+                return redirect()->route('site.home');
             }
 
             $request->attributes->set('portal_forbidden', true);
