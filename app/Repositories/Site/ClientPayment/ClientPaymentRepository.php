@@ -44,17 +44,17 @@ class ClientPaymentRepository
             'total_percent' => 100,
             'history' => [
                 [
-                    'date' => '2026-10-12',
+                    'date' => '2026-10-18',
                     'reference' => 'PAY-90102',
                     'milestone' => 'Milestone 2 — Mid-point',
                     'method' => 'Partial payment',
                     'amount' => 200,
-                    'status' => 'pending',
+                    'status' => 'paid',
                 ],
             ],
             'summary' => [
-                'paid' => 0,
-                'pending' => 200,
+                'paid' => 200,
+                'pending' => 0,
                 'outstanding' => 6800,
                 'currency' => 'USD',
             ],

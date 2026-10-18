@@ -181,6 +181,12 @@ class ProjectProgressRepository
             ],
             'history' => [
                 [
+                    'date' => '2026-10-18',
+                    'title' => 'Partial payment received',
+                    'detail' => '$200 partial payment marked paid on /client-payment (PAY-90102).',
+                    'status' => 'shipped',
+                ],
+                [
                     'date' => '2026-10-15',
                     'title' => 'Under-maintenance page',
                     'detail' => 'Added SITE_MAINTENANCE env flag. Marketplace/portals/APIs return 503; client payment and project progress stay reachable.',
