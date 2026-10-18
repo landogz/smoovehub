@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { closeModal, openModal } from '../../shared/modal.js';
 import { getCurrentUser, openAuthModal } from '../auth/auth.js';
-import { restorePortalUser, userHasAnyRole } from '../auth/portal-auth.js';
+import { portalLogout, restorePortalUser, userHasAnyRole } from '../auth/portal-auth.js';
 import { showToast } from '../landing/toast.js';
 import { CONDITION_LABELS, formatMoney } from './state.js';
 
@@ -46,6 +46,17 @@ function paymentBadge(status) {
     return 'sh-badge sh-badge-amber';
 }
 
+function emptyState(title, copy) {
+    return `<div class="sh-dash-empty">
+        <div class="text-sm font-semibold text-sh-s800">${escapeHtml(title)}</div>
+        <p class="mt-1 max-w-sm text-[13px] text-sh-s500">${escapeHtml(copy)}</p>
+    </div>`;
+}
+
+function statusLabel(value) {
+    return String(value ?? '').replace(/_/g, ' ');
+}
+
 function askConfirm(message, action) {
     confirmAction = action;
     const text = document.getElementById('seller-confirm-text');
@@ -64,12 +75,10 @@ export function dashTab(tab, options = {}) {
         document.getElementById(`dash-${key}`)?.classList.toggle('hidden', key !== next);
         document.getElementById(`dash-${key}`)?.classList.toggle('sh-dash-panel-active', key === next);
 
-        const link = document.querySelector(`[data-dash-tab="${key}"]`);
+        const link = document.querySelector(`nav[aria-label="Dashboard navigation"] [data-dash-tab="${key}"]`);
 
         if (link) {
-            link.classList.toggle('bg-white/15', key === next);
-            link.classList.toggle('text-white', key === next);
-            link.classList.toggle('text-white/70', key !== next);
+            link.classList.toggle('is-active', key === next);
         }
     });
 
@@ -133,23 +142,28 @@ export function refreshDashboard() {
     loadDashboardOverview();
 }
 
-function applySellerIdentity(user) {
-    const username = user?.username ? `@${user.username}` : 'Seller Account';
-    setText('dash-seller-username', username);
-    setText('dash-header-username', user?.username ? `· @${user.username}` : '');
-
-    const avatar = document.getElementById('dash-seller-avatar');
-
-    if (!avatar) {
+function paintAvatar(element, user) {
+    if (!element) {
         return;
     }
 
     if (user?.avatar_url) {
-        avatar.innerHTML = `<img src="${escapeHtml(user.avatar_url)}" alt="" class="h-full w-full object-cover">`;
+        element.innerHTML = `<img src="${escapeHtml(user.avatar_url)}" alt="" class="h-full w-full object-cover">`;
         return;
     }
 
-    avatar.textContent = user?.avatar_initials ?? 'S';
+    element.textContent = user?.avatar_initials ?? 'S';
+}
+
+function applySellerIdentity(user) {
+    const username = user?.username ? `@${user.username}` : 'Seller';
+    const displayName = user?.seller_profile?.store_name ?? user?.name ?? 'Seller';
+
+    setText('dash-seller-username', username);
+    setText('dash-header-username', username);
+    setText('dash-header-name', displayName);
+    paintAvatar(document.getElementById('dash-seller-avatar'), user);
+    paintAvatar(document.getElementById('dash-header-avatar'), user);
 }
 
 function applyStorefront(store) {
@@ -161,6 +175,12 @@ function applyStorefront(store) {
 
     if (sellerName) {
         sellerName.textContent = store.store_name ?? 'My Store';
+    }
+
+    const headerName = document.getElementById('dash-header-name');
+
+    if (headerName && store.store_name) {
+        headerName.textContent = store.store_name;
     }
 
     const storeUrl = document.getElementById('dash-store-url');
@@ -238,19 +258,19 @@ function renderOverviewOrders() {
     }
 
     if (!orders.length) {
-        list.innerHTML = '<p class="py-6 text-center text-[13px] text-sh-s400">No orders yet.</p>';
+        list.innerHTML = emptyState('No orders yet', 'Customer purchases will appear here.');
         return;
     }
 
     list.innerHTML = orders.map((order) => `
-        <div class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-sh-s100 px-4 py-3">
+        <div class="sh-dash-row">
             <div>
-                <div class="text-xs font-semibold text-sh-s900">${escapeHtml(order.order_number)}</div>
-                <div class="text-[13px] text-sh-s500">${escapeHtml(order.product)}</div>
+                <div class="text-[13px] font-semibold text-sh-s900">${escapeHtml(order.order_number)}</div>
+                <div class="text-[12px] text-sh-s500">${escapeHtml(order.product)}</div>
             </div>
             <div class="text-right">
-                <div class="text-sm font-bold text-sh-s900">${formatMoney(order.total)}</div>
-                <span class="${paymentBadge(order.payment_status)}">${escapeHtml(order.payment_status)}</span>
+                <div class="text-sm font-semibold text-sh-s900">${formatMoney(order.total)}</div>
+                <span class="${paymentBadge(order.payment_status)}">${escapeHtml(statusLabel(order.payment_status))}</span>
             </div>
         </div>`).join('');
 }
@@ -264,20 +284,24 @@ export function renderDashProducts() {
     }
 
     if (!products.length) {
-        el.innerHTML = '<div class="py-8 text-center text-[13px] text-sh-s400">No products listed yet. Click <strong>+ Add Product</strong> to start selling.</div>';
+        el.innerHTML = emptyState('No listings yet', 'Add a product to start selling on your storefront.');
         return;
     }
 
     el.innerHTML = products.map((product) => `
-        <div class="grid grid-cols-1 items-center gap-3 border-b border-sh-s100 py-4 last:border-0 md:grid-cols-[2fr_repeat(4,1fr)]">
-            <span class="flex items-center gap-3 text-[13px]"><span class="text-2xl">${escapeHtml(product.icon ?? '🛋️')}</span><strong>${escapeHtml(product.name)}</strong></span>
-            <span class="font-semibold">${formatMoney(product.price)}</span>
-            <span><span class="sh-badge sh-badge-blue">${escapeHtml(CONDITION_LABELS[product.condition] ?? product.condition)}</span></span>
-            <span><span class="sh-badge sh-badge-green">${escapeHtml(product.status ?? 'active')}</span></span>
-            <span class="flex flex-wrap gap-2">
-                <button type="button" class="sh-btn sh-btn-sm sh-btn-outline" data-edit-product="${escapeHtml(product.id)}">Edit</button>
-                <button type="button" class="sh-btn sh-btn-sm sh-btn-outline text-red-600" data-remove-product="${escapeHtml(product.id)}">Remove</button>
-            </span>
+        <div class="sh-dash-row mb-2 last:mb-0">
+            <div class="flex min-w-0 items-center gap-3">
+                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-lg">${escapeHtml(product.icon ?? '🛋️')}</span>
+                <div class="min-w-0">
+                    <div class="truncate text-[13px] font-semibold text-sh-s900">${escapeHtml(product.name)}</div>
+                    <div class="text-[12px] text-sh-s500">${formatMoney(product.price)} · ${escapeHtml(CONDITION_LABELS[product.condition] ?? product.condition)}</div>
+                </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <span class="sh-badge sh-badge-green">${escapeHtml(product.status ?? 'active')}</span>
+                <button type="button" class="sh-dash-ghost" data-edit-product="${escapeHtml(product.id)}">Edit</button>
+                <button type="button" class="sh-dash-ghost text-red-600" data-remove-product="${escapeHtml(product.id)}">Remove</button>
+            </div>
         </div>`).join('');
 }
 
@@ -301,24 +325,23 @@ function renderDashOrders() {
     }
 
     if (!dashboardCache.orders.length) {
-        el.innerHTML = '<div class="py-8 text-center text-[13px] text-sh-s400">No orders to display.</div>';
+        el.innerHTML = emptyState('No orders yet', 'When shoppers buy from your store, fulfillment actions will show here.');
         return;
     }
 
     el.innerHTML = dashboardCache.orders.map((order) => `
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-sh-s100 py-4 last:border-0">
+        <div class="sh-dash-row mb-2 last:mb-0">
             <div>
-                <div class="font-semibold text-sh-s900">${escapeHtml(order.order_number)}</div>
-                <div class="text-[13px] text-sh-s500">${escapeHtml(order.product)}</div>
-                <div class="text-xs text-sh-s400">${escapeHtml(order.date ?? '')} · ${escapeHtml(order.status)}</div>
+                <div class="text-[13px] font-semibold text-sh-s900">${escapeHtml(order.order_number)}</div>
+                <div class="text-[12px] text-sh-s500">${escapeHtml(order.product)} · ${escapeHtml(order.date ?? '')}</div>
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <div class="text-right">
-                    <div class="font-bold text-sh-s900">${formatMoney(order.total)}</div>
-                    <span class="${paymentBadge(order.payment_status)}">${escapeHtml(order.payment_status)}</span>
+                    <div class="text-sm font-semibold text-sh-s900">${formatMoney(order.total)}</div>
+                    <span class="${paymentBadge(order.payment_status)}">${escapeHtml(statusLabel(order.payment_status))}</span>
                 </div>
                 ${ORDER_STATUSES.filter((status) => status !== order.status).map((status) => `
-                    <button type="button" class="sh-btn sh-btn-sm sh-btn-outline" data-order-status="${escapeHtml(order.id)}" data-status="${status}">${status}</button>
+                    <button type="button" class="sh-dash-ghost" data-order-status="${escapeHtml(order.id)}" data-status="${status}">${escapeHtml(statusLabel(status))}</button>
                 `).join('')}
             </div>
         </div>`).join('');
@@ -345,19 +368,19 @@ function renderBanks(banks) {
     }
 
     if (!banks.length) {
-        list.innerHTML = '<p class="text-[13px] text-sh-s400">No payout banks yet. Add a checking or savings account (last 4 only).</p>';
+        list.innerHTML = emptyState('No banks yet', 'Add a checking or savings account using the last 4 digits only.');
         return;
     }
 
     list.innerHTML = banks.map((bank) => `
-        <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sh-s100 px-4 py-3">
+        <div class="sh-dash-row">
             <div>
                 <div class="text-sm font-semibold text-sh-s900">${escapeHtml(bank.bank_name)} · •••• ${escapeHtml(bank.last4)}</div>
                 <div class="text-[12px] text-sh-s500">${escapeHtml(bank.holder_name)} · ${escapeHtml(bank.account_type)}${bank.is_default ? ' · Default' : ''}</div>
             </div>
             <div class="flex gap-2">
-                ${bank.is_default ? '' : `<button type="button" class="sh-btn sh-btn-sm sh-btn-outline" data-default-bank="${escapeHtml(bank.id)}">Default</button>`}
-                <button type="button" class="sh-btn sh-btn-sm sh-btn-outline text-red-600" data-delete-bank="${escapeHtml(bank.id)}">Remove</button>
+                ${bank.is_default ? '' : `<button type="button" class="sh-dash-ghost" data-default-bank="${escapeHtml(bank.id)}">Default</button>`}
+                <button type="button" class="sh-dash-ghost text-red-600" data-delete-bank="${escapeHtml(bank.id)}">Remove</button>
             </div>
         </div>`).join('');
 }
@@ -385,20 +408,21 @@ function renderVouchers(vouchers) {
     }
 
     if (!vouchers.length) {
-        list.innerHTML = '<p class="py-8 text-center text-[13px] text-sh-s400">No store vouchers yet. Create a code members can redeem.</p>';
+        list.innerHTML = emptyState('No vouchers yet', 'Create a store code members can redeem from My Account.');
         return;
     }
 
     list.innerHTML = vouchers.map((voucher) => `
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-sh-s100 py-4 last:border-0">
+        <div class="sh-dash-row mb-2 last:mb-0">
             <div>
-                <div class="font-mono text-sm font-bold text-sh-blue">${escapeHtml(voucher.code)}</div>
-                <div class="text-sm font-semibold text-sh-s900">${escapeHtml(voucher.title)}</div>
-                <div class="text-[12px] text-sh-s500">${voucher.type === 'percent' ? `${voucher.value}%` : formatMoney(voucher.value)} off · min ${formatMoney(voucher.min_spend)} · ${escapeHtml(voucher.status)}</div>
+                <div class="font-mono text-sm font-semibold text-sh-blue">${escapeHtml(voucher.code)}</div>
+                <div class="text-[13px] text-sh-s800">${escapeHtml(voucher.title)}</div>
+                <div class="text-[12px] text-sh-s500">${voucher.type === 'percent' ? `${voucher.value}%` : formatMoney(voucher.value)} off · min ${formatMoney(voucher.min_spend)}</div>
             </div>
             <div class="flex gap-2">
-                <button type="button" class="sh-btn sh-btn-sm sh-btn-outline" data-edit-voucher="${escapeHtml(voucher.id)}">Edit</button>
-                <button type="button" class="sh-btn sh-btn-sm sh-btn-outline text-red-600" data-delete-voucher="${escapeHtml(voucher.id)}">Delete</button>
+                <span class="sh-badge ${voucher.status === 'active' ? 'sh-badge-green' : 'sh-badge-slate'}">${escapeHtml(voucher.status)}</span>
+                <button type="button" class="sh-dash-ghost" data-edit-voucher="${escapeHtml(voucher.id)}">Edit</button>
+                <button type="button" class="sh-dash-ghost text-red-600" data-delete-voucher="${escapeHtml(voucher.id)}">Delete</button>
             </div>
         </div>`).join('');
 }
@@ -436,22 +460,22 @@ async function loadDistCatalog() {
         const items = response.data?.data?.items ?? [];
 
         if (!items.length) {
-            body.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-[13px] text-sh-s400">No wholesale SKUs yet. Distribution inventory ships in Phase 5.</td></tr>';
+            body.innerHTML = '<tr><td colspan="5" class="px-4 py-12 text-center text-[13px] text-sh-s500">No wholesale SKUs yet. Distributor inventory uploads ship in Phase 5.</td></tr>';
             return;
         }
 
         body.innerHTML = items.map((item) => `
             <tr class="border-b border-sh-s100 last:border-0">
-                <td class="px-4 py-3 font-mono text-xs">${escapeHtml(item.sku)}</td>
-                <td class="px-4 py-3 font-medium">${escapeHtml(item.name)}</td>
-                <td class="px-4 py-3">${formatMoney(item.wholesale)}</td>
-                <td class="px-4 py-3">${escapeHtml(item.qty)}</td>
-                <td class="px-4 py-3 text-right">
+                <td class="px-4 py-3.5 font-mono text-xs text-sh-s600">${escapeHtml(item.sku)}</td>
+                <td class="px-4 py-3.5 font-medium text-sh-s900">${escapeHtml(item.name)}</td>
+                <td class="px-4 py-3.5">${formatMoney(item.wholesale)}</td>
+                <td class="px-4 py-3.5 text-sh-s600">${escapeHtml(item.qty)}</td>
+                <td class="px-4 py-3.5 text-right">
                     <button type="button" class="sh-btn sh-btn-sm sh-btn-blue" data-import-sku="${escapeHtml(item.id)}">Import</button>
                 </td>
             </tr>`).join('');
     } catch {
-        body.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-[13px] text-sh-s400">Sign in as a seller to browse wholesale inventory.</td></tr>';
+        body.innerHTML = '<tr><td colspan="5" class="px-4 py-12 text-center text-[13px] text-sh-s500">Sign in as a seller to browse wholesale inventory.</td></tr>';
     }
 }
 
@@ -469,20 +493,24 @@ async function loadImports(tab) {
         const rows = response.data?.data?.[key] ?? [];
 
         if (!rows.length) {
-            target.textContent = tab === 'mypurchases'
-                ? 'No distribution purchases yet.'
-                : 'No import orders yet. Browse the Distribution Catalog to import wholesale inventory.';
+            target.innerHTML = emptyState(
+                tab === 'mypurchases' ? 'No purchases yet' : 'No imports yet',
+                tab === 'mypurchases'
+                    ? 'Distribution purchases will appear here.'
+                    : 'Import a SKU from the distribution catalog to populate this list.',
+            );
             return;
         }
 
         target.innerHTML = rows.map((row) => `
-            <div class="border-b border-sh-s100 py-3 text-[13px] last:border-0">
-                <strong>${escapeHtml(row.name ?? 'Imported SKU')}</strong>
-                <div class="text-sh-s500">${escapeHtml(row.status)} · ${formatMoney(row.resale_price)} · ${escapeHtml(row.imported_at ?? '')}</div>
+            <div class="sh-dash-row mb-2 last:mb-0">
+                <div>
+                    <div class="text-[13px] font-semibold text-sh-s900">${escapeHtml(row.name ?? 'Imported SKU')}</div>
+                    <div class="text-[12px] text-sh-s500">${escapeHtml(statusLabel(row.status))} · ${formatMoney(row.resale_price)} · ${escapeHtml(row.imported_at ?? '')}</div>
+                </div>
             </div>`).join('');
-        target.classList.remove('text-center', 'text-sh-s500');
     } catch {
-        target.textContent = 'Sign in as a seller to load this list.';
+        target.innerHTML = emptyState('Unavailable', 'Sign in as a seller to load this list.');
     }
 }
 
@@ -498,26 +526,25 @@ async function loadOnsite() {
         const rows = response.data?.data?.appointments ?? [];
 
         if (!rows.length) {
-            target.textContent = 'Customer onsite visit requests will appear here when buyers book showroom appointments.';
+            target.innerHTML = emptyState('No visit requests', 'Buyer showroom appointments will appear here.');
             return;
         }
 
-        target.classList.remove('text-center', 'text-sh-s500');
         target.innerHTML = rows.map((row) => `
-            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-sh-s100 py-3 last:border-0">
+            <div class="sh-dash-row mb-2 last:mb-0">
                 <div>
-                    <div class="text-sm font-semibold text-sh-s900">${escapeHtml(row.status)}</div>
+                    <div class="text-sm font-semibold text-sh-s900">${escapeHtml(statusLabel(row.status))}</div>
                     <div class="text-[12px] text-sh-s500">${escapeHtml(row.scheduled_at || 'Unscheduled')} · ${escapeHtml(row.customer_notes || 'No notes')}</div>
                 </div>
                 <div class="flex gap-2">
                     ${row.status === 'confirmed' || row.status === 'cancelled' ? '' : `
                         <button type="button" class="sh-btn sh-btn-sm sh-btn-blue" data-onsite-status="${escapeHtml(row.id)}" data-status="confirmed">Confirm</button>
-                        <button type="button" class="sh-btn sh-btn-sm sh-btn-outline" data-onsite-status="${escapeHtml(row.id)}" data-status="cancelled">Cancel</button>
+                        <button type="button" class="sh-dash-ghost" data-onsite-status="${escapeHtml(row.id)}" data-status="cancelled">Cancel</button>
                     `}
                 </div>
             </div>`).join('');
     } catch {
-        target.textContent = 'Sign in as a seller to load visit requests.';
+        target.innerHTML = emptyState('Unavailable', 'Sign in as a seller to load visit requests.');
     }
 }
 
@@ -682,8 +709,37 @@ export function initDashboard() {
     document.querySelectorAll('[data-dash-tab]').forEach((link) => {
         link.addEventListener('click', (event) => {
             event.preventDefault();
+            document.getElementById('dash-user-menu')?.classList.add('hidden');
+            document.getElementById('dash-user-toggle')?.setAttribute('aria-expanded', 'false');
             dashTab(link.dataset.dashTab);
         });
+    });
+
+    const userToggle = document.getElementById('dash-user-toggle');
+    const userMenu = document.getElementById('dash-user-menu');
+
+    userToggle?.addEventListener('click', () => {
+        userMenu?.classList.toggle('hidden');
+        userToggle.setAttribute(
+            'aria-expanded',
+            userMenu?.classList.contains('hidden') ? 'false' : 'true',
+        );
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!userToggle || !userMenu) {
+            return;
+        }
+
+        if (!userMenu.contains(event.target) && !userToggle.contains(event.target)) {
+            userMenu.classList.add('hidden');
+            userToggle.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    document.querySelector('[data-dash-logout]')?.addEventListener('click', async () => {
+        await portalLogout();
+        window.location.href = '/';
     });
 
     window.addEventListener('hashchange', () => dashTab(tabFromHash(), { skipHash: true }));

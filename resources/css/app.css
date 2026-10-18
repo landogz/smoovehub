@@ -1843,6 +1843,46 @@ main,
     @apply block;
 }
 
+.sh-dash-nav-link {
+    @apply flex shrink-0 items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] font-medium text-white/65 transition-colors lg:w-full;
+}
+
+.sh-dash-nav-link:hover {
+    @apply bg-white/10 text-white;
+}
+
+.sh-dash-nav-link.is-active {
+    @apply bg-white text-sh-navy shadow-sm;
+}
+
+.sh-dash-page-title {
+    @apply text-xl font-bold tracking-tight text-sh-s900 md:text-[22px];
+}
+
+.sh-dash-page-copy {
+    @apply mt-1 max-w-2xl text-[13px] leading-5 text-sh-s500;
+}
+
+.sh-dash-card {
+    @apply rounded-2xl border border-sh-s200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)];
+}
+
+.sh-dash-kpi {
+    @apply rounded-2xl border border-sh-s200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)];
+}
+
+.sh-dash-empty {
+    @apply flex flex-col items-center justify-center px-6 py-12 text-center;
+}
+
+.sh-dash-row {
+    @apply flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sh-s100 bg-sh-s50/60 px-4 py-3.5;
+}
+
+.sh-dash-ghost {
+    @apply inline-flex items-center rounded-lg border border-sh-s200 bg-white px-2.5 py-1.5 text-[12px] font-semibold text-sh-s700 transition-colors hover:border-sh-blue hover:text-sh-blue;
+}
+
 .sh-dolores-root {
     @apply pointer-events-none fixed inset-0 z-[400];
 }

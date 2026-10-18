@@ -710,17 +710,40 @@ class SitePageRepository
     public function dashboardPage(): array
     {
         return [
+            'nav_groups' => [
+                [
+                    'label' => 'Store',
+                    'items' => [
+                        ['key' => 'overview', 'label' => 'Overview'],
+                        ['key' => 'products', 'label' => 'Products'],
+                        ['key' => 'orders', 'label' => 'Orders'],
+                        ['key' => 'payouts', 'label' => 'Payouts'],
+                        ['key' => 'vouchers', 'label' => 'Vouchers'],
+                        ['key' => 'settings', 'label' => 'Settings'],
+                    ],
+                ],
+                [
+                    'label' => 'Sourcing',
+                    'items' => [
+                        ['key' => 'distcatalog', 'label' => 'Dist. Catalog', 'badge' => 'Soon'],
+                        ['key' => 'myimports', 'label' => 'Imports'],
+                        ['key' => 'mypurchases', 'label' => 'Purchases'],
+                        ['key' => 'onsiteappts', 'label' => 'Onsite visits'],
+                        ['key' => 'openapi', 'label' => 'Open API'],
+                    ],
+                ],
+            ],
             'nav' => [
                 ['key' => 'overview', 'label' => 'Overview'],
-                ['key' => 'products', 'label' => 'My Products'],
+                ['key' => 'products', 'label' => 'Products'],
                 ['key' => 'orders', 'label' => 'Orders'],
                 ['key' => 'payouts', 'label' => 'Payouts'],
                 ['key' => 'vouchers', 'label' => 'Vouchers'],
                 ['key' => 'settings', 'label' => 'Settings'],
-                ['key' => 'distcatalog', 'label' => 'Dist. Catalog', 'badge' => 'NEW', 'accent' => true],
-                ['key' => 'myimports', 'label' => 'Import Orders', 'accent' => 'green'],
-                ['key' => 'mypurchases', 'label' => 'Dist. Purchases'],
-                ['key' => 'onsiteappts', 'label' => 'Onsite Visits', 'accent' => 'orange'],
+                ['key' => 'distcatalog', 'label' => 'Dist. Catalog', 'badge' => 'Soon'],
+                ['key' => 'myimports', 'label' => 'Imports'],
+                ['key' => 'mypurchases', 'label' => 'Purchases'],
+                ['key' => 'onsiteappts', 'label' => 'Onsite visits'],
                 ['key' => 'openapi', 'label' => 'Open API'],
             ],
             'stats' => [

@@ -4,224 +4,309 @@
 
 @section('content')
     <div id="seller-dashboard" class="flex min-h-screen flex-col lg:flex-row">
-        <aside class="w-full shrink-0 border-b border-sh-s200 bg-gradient-to-b from-sh-navy to-sh-blue text-white lg:w-64 lg:border-b-0 lg:border-r">
-            <div class="border-b border-white/10 px-5 py-4">
+        <aside class="flex w-full shrink-0 flex-col bg-sh-navy text-white lg:w-[268px] lg:min-h-screen">
+            <div class="border-b border-white/10 px-5 py-5">
                 <a href="{{ route('site.home') }}" class="block">
-                    <img src="{{ asset('images/landing/logo-nav.png') }}" alt="SmooveHub" class="h-10 brightness-0 invert">
+                    <img src="{{ asset('images/landing/logo-nav.png') }}" alt="SmooveHub" class="h-9 brightness-0 invert">
                 </a>
-                <div class="mt-3 flex items-center gap-3">
-                    <div id="dash-seller-avatar" class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white/15 text-xs font-bold">S</div>
+                <div class="mt-5 flex items-center gap-3">
+                    <div id="dash-seller-avatar" class="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-white/10 text-xs font-bold ring-2 ring-white/10">S</div>
                     <div class="min-w-0">
-                        <div id="dash-seller-name" class="truncate text-sm font-bold">My Store</div>
-                        <div id="dash-seller-username" class="truncate text-xs text-white/60">Seller Account</div>
+                        <div id="dash-seller-name" class="truncate text-sm font-semibold">My Store</div>
+                        <div id="dash-seller-username" class="truncate text-[12px] text-white/55">Seller</div>
                     </div>
                 </div>
-                <span class="mt-2 inline-flex sh-badge sh-badge-green">✓ Verified</span>
-                <div class="mt-3 rounded-lg border border-sh-orange/30 bg-sh-orange/10 p-3">
-                    <div class="text-[9px] font-bold uppercase tracking-widest text-white/40">Your Store URL</div>
-                    <div id="dash-store-url" class="mt-1 cursor-pointer break-all font-mono text-[11px] font-semibold text-sh-orange">smoovehub.com/store/my-store</div>
-                    <button type="button" class="mt-2 w-full rounded-md bg-sh-orange py-1.5 text-[11px] font-bold text-white" data-open-my-store>🏪 View My Store →</button>
+                <div class="mt-4 rounded-xl bg-white/5 p-3">
+                    <div class="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/40">Storefront</div>
+                    <div id="dash-store-url" class="mt-1 cursor-pointer break-all font-mono text-[11px] text-white/80">smoovehub.com/store/my-store</div>
+                    <button type="button" class="mt-3 w-full rounded-lg bg-white py-2 text-[12px] font-semibold text-sh-navy" data-open-my-store>View store</button>
                 </div>
             </div>
-            <nav class="flex gap-1 overflow-x-auto p-3 lg:flex-col lg:overflow-visible" aria-label="Dashboard navigation">
-                @foreach ($portal['nav'] as $item)
-                    <a
-                        href="#{{ $item['key'] }}"
-                        data-dash-tab="{{ $item['key'] }}"
-                        @class([
-                            'flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-[13px] font-medium transition-colors lg:w-full',
-                            'bg-white/15 text-white' => ($item['key'] ?? '') === 'overview',
-                            'text-white/70 hover:bg-white/10 hover:text-white' => ($item['key'] ?? '') !== 'overview',
-                        ])
-                    >
-                        <span>{{ $item['label'] }}</span>
-                        @if (isset($item['badge']))
-                            <span @class([
-                                'ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold',
-                                'bg-sh-orange text-white' => ($item['accent'] ?? false) === true || $item['badge'] === 'NEW',
-                                'bg-white/20 text-white' => ! (($item['accent'] ?? false) === true || $item['badge'] === 'NEW'),
-                            ])>{{ $item['badge'] }}</span>
-                        @endif
-                    </a>
+            <nav class="flex flex-1 gap-1 overflow-x-auto p-3 lg:flex-col lg:overflow-visible" aria-label="Dashboard navigation">
+                @foreach ($portal['nav_groups'] ?? [['items' => $portal['nav']]] as $group)
+                    @if (! empty($group['label']))
+                        <p class="hidden px-3 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35 lg:block">{{ $group['label'] }}</p>
+                    @endif
+                    @foreach ($group['items'] as $item)
+                        <a
+                            href="#{{ $item['key'] }}"
+                            data-dash-tab="{{ $item['key'] }}"
+                            @class(['sh-dash-nav-link', 'is-active' => ($item['key'] ?? '') === 'overview'])
+                        >
+                            <svg class="h-4 w-4 shrink-0 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                @switch($item['key'])
+                                    @case('overview')
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 5h7v7H4zM13 5h7v4h-7zM13 11h7v8h-7zM4 14h7v5H4z" />
+                                        @break
+                                    @case('products')
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                                        @break
+                                    @case('orders')
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 5h12M9 12h12M9 19h12M4 5h.01M4 12h.01M4 19h.01" />
+                                        @break
+                                    @case('payouts')
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3v18M17 8c0-1.7-2.2-3-5-3s-5 1.3-5 3 2.2 3 5 3 5 1.3 5 3-2.2 3-5 3-5-1.3-5-3" />
+                                        @break
+                                    @case('vouchers')
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 9a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 1 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 1 0 0-4z" />
+                                        @break
+                                    @case('settings')
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
+                                        @break
+                                    @case('distcatalog')
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 9h18M5 9V7l7-4 7 4v2M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9" />
+                                        @break
+                                    @case('myimports')
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14" />
+                                        @break
+                                    @case('mypurchases')
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M6 7h12l2 12H4L6 7zM9 7V5a3 3 0 0 1 6 0v2" />
+                                        @break
+                                    @case('onsiteappts')
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3M4 11h16M6 5h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z" />
+                                        @break
+                                    @default
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 9h8M8 13h5M6 4h12a2 2 0 0 1 2 2v14l-4-2-4 2-4-2-4 2V6a2 2 0 0 1 2-2z" />
+                                @endswitch
+                            </svg>
+                            <span class="truncate">{{ $item['label'] }}</span>
+                            @if (isset($item['badge']))
+                                <span class="ml-auto rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-semibold text-white/80">{{ $item['badge'] }}</span>
+                            @endif
+                        </a>
+                    @endforeach
                 @endforeach
             </nav>
             <div class="hidden border-t border-white/10 p-4 lg:block">
-                <a href="{{ route('site.home') }}" class="text-[13px] font-medium text-white/60 hover:text-white">← Back to site</a>
+                <a href="{{ route('site.home') }}" class="text-[13px] font-medium text-white/50 hover:text-white">Back to marketplace</a>
             </div>
         </aside>
 
         <div class="flex min-w-0 flex-1 flex-col">
-            <header class="border-b border-sh-s200 bg-white px-5 py-4 md:px-8">
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
+            <header class="border-b border-sh-s200 bg-white px-5 py-3.5 md:px-8">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="min-w-0">
                         <h1 class="text-lg font-bold text-sh-s900 md:text-xl">Seller Dashboard</h1>
-                        <p class="text-[13px] text-sh-s500">Welcome back, <strong id="dash-greet">Seller</strong> <span id="dash-header-username" class="text-sh-s400"></span></p>
+                        <p class="truncate text-[13px] text-sh-s500">Welcome back, <strong id="dash-greet">Seller</strong></p>
                     </div>
-                    <div class="flex gap-2">
-                        <button type="button" class="sh-btn sh-btn-sm sh-btn-outline" data-modal-open="login-modal">Account</button>
+                    <div class="flex shrink-0 items-center gap-2 sm:gap-3">
+                        <div class="relative">
+                            <button
+                                id="dash-user-toggle"
+                                type="button"
+                                class="flex min-h-11 items-center gap-2 rounded-[10px] border border-sh-s200 bg-white px-2 py-1.5 transition-colors hover:border-sh-blue/40 hover:bg-sh-blue-lt"
+                                aria-expanded="false"
+                                aria-controls="dash-user-menu"
+                            >
+                                <span id="dash-header-avatar" class="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-sh-blue text-xs font-bold text-white">S</span>
+                                <span class="hidden min-w-0 text-left sm:block">
+                                    <span id="dash-header-name" class="block max-w-[140px] truncate text-[13px] font-semibold text-sh-s900">Seller</span>
+                                    <span id="dash-header-username" class="block max-w-[140px] truncate text-[11px] text-sh-s500">Seller</span>
+                                </span>
+                                <svg class="hidden h-4 w-4 text-sh-s400 sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="dash-user-menu" class="absolute right-0 top-[calc(100%+8px)] z-[350] hidden min-w-[220px] overflow-hidden rounded-[14px] border border-sh-s200 bg-white shadow-[0_16px_48px_rgba(15,23,42,0.14)]">
+                                <button type="button" class="block w-full px-4 py-3 text-left text-[13px] font-medium text-sh-s700 hover:bg-sh-s50" data-dash-tab="settings">Store settings</button>
+                                <button type="button" class="block w-full px-4 py-3 text-left text-[13px] font-medium text-sh-s700 hover:bg-sh-s50" data-open-my-store>View my store</button>
+                                <button type="button" class="block w-full px-4 py-3 text-left text-[13px] font-medium text-sh-s700 hover:bg-sh-s50" data-auth-logout-other-devices>Sign out other devices</button>
+                                <button type="button" class="block w-full border-t border-sh-s100 px-4 py-3 text-left text-[13px] font-medium text-red-600 hover:bg-red-50" data-dash-logout>Sign out</button>
+                            </div>
+                        </div>
                         <button type="button" class="sh-btn sh-btn-sm sh-btn-blue" data-modal-open="add-product-modal">+ Add Product</button>
                     </div>
                 </div>
             </header>
 
-            <main class="flex-1 p-5 md:p-8">
+            <main class="flex-1 bg-sh-s50 p-5 md:p-8">
                 <div id="dash-overview" class="sh-dash-panel sh-dash-panel-active">
-                    <div class="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
-                        <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-5">
-                            <div class="text-xs font-semibold uppercase tracking-widest text-sh-s400">Revenue (30d)</div>
-                            <div id="dash-stat-revenue" class="sh-display mt-2 text-2xl font-black text-sh-s900 md:text-3xl">$0</div>
+                    <div class="mb-6">
+                        <h2 class="sh-dash-page-title">Overview</h2>
+                        <p class="sh-dash-page-copy">Sales, catalog, and fulfillment at a glance.</p>
+                    </div>
+                    <div class="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+                        <div class="sh-dash-kpi">
+                            <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-sh-s400">Revenue · 30d</div>
+                            <div id="dash-stat-revenue" class="mt-2 text-2xl font-bold tracking-tight text-sh-s900 md:text-[28px]">$0</div>
                         </div>
-                        <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-5">
-                            <div class="text-xs font-semibold uppercase tracking-widest text-sh-s400">Orders</div>
-                            <div id="dash-stat-orders" class="sh-display mt-2 text-2xl font-black text-sh-s900 md:text-3xl">0</div>
+                        <div class="sh-dash-kpi">
+                            <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-sh-s400">Orders</div>
+                            <div id="dash-stat-orders" class="mt-2 text-2xl font-bold tracking-tight text-sh-s900 md:text-[28px]">0</div>
                         </div>
-                        <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-5">
-                            <div class="text-xs font-semibold uppercase tracking-widest text-sh-s400">Products</div>
-                            <div id="dash-stat-products" class="sh-display mt-2 text-2xl font-black text-sh-s900 md:text-3xl">0</div>
+                        <div class="sh-dash-kpi">
+                            <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-sh-s400">Products</div>
+                            <div id="dash-stat-products" class="mt-2 text-2xl font-bold tracking-tight text-sh-s900 md:text-[28px]">0</div>
                         </div>
-                        <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-5">
-                            <div class="text-xs font-semibold uppercase tracking-widest text-sh-s400">Rating</div>
-                            <div id="dash-stat-rating" class="sh-display mt-2 text-2xl font-black text-sh-s900 md:text-3xl">—</div>
+                        <div class="sh-dash-kpi">
+                            <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-sh-s400">Rating</div>
+                            <div id="dash-stat-rating" class="mt-2 text-2xl font-bold tracking-tight text-sh-s900 md:text-[28px]">—</div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                        <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-6">
-                            <h2 class="mb-4 text-sm font-bold text-sh-s900">Recent Orders</h2>
-                            <div id="dash-orders-list" class="space-y-3"></div>
+                    <div class="grid grid-cols-1 gap-5 lg:grid-cols-5">
+                        <div class="sh-dash-card p-5 lg:col-span-3">
+                            <div class="mb-4 flex items-center justify-between">
+                                <h3 class="text-sm font-semibold text-sh-s900">Recent orders</h3>
+                                <button type="button" class="text-[12px] font-semibold text-sh-blue" data-dash-tab="orders">View all</button>
+                            </div>
+                            <div id="dash-orders-list" class="space-y-2"></div>
                         </div>
-                        <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-6">
-                            <h2 class="mb-4 text-sm font-bold text-sh-s900">Quick Actions</h2>
-                            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                <button type="button" class="rounded-xl border border-sh-s200 p-4 text-center transition-colors hover:border-sh-blue hover:bg-sh-blue-lt" data-open-my-store>
-                                    <div class="mb-2 text-2xl" aria-hidden="true">🛒</div>
-                                    <div class="text-sm font-semibold text-sh-s900">View Storefront</div>
+                        <div class="sh-dash-card p-5 lg:col-span-2">
+                            <h3 class="mb-4 text-sm font-semibold text-sh-s900">Shortcuts</h3>
+                            <div class="grid grid-cols-1 gap-2">
+                                <button type="button" class="sh-dash-row text-left hover:border-sh-blue/40" data-open-my-store>
+                                    <span class="text-sm font-semibold text-sh-s900">View storefront</span>
+                                    <span class="text-[12px] text-sh-s400">Public shop</span>
                                 </button>
-                                <a href="{{ route('site.quote') }}" class="rounded-xl border border-sh-s200 p-4 text-center transition-colors hover:border-sh-blue hover:bg-sh-blue-lt">
-                                    <div class="mb-2 text-2xl" aria-hidden="true">🚛</div>
-                                    <div class="text-sm font-semibold text-sh-s900">Delivery Quotes</div>
-                                </a>
-                                <a href="{{ route('site.contact') }}" class="rounded-xl border border-sh-s200 p-4 text-center transition-colors hover:border-sh-blue hover:bg-sh-blue-lt">
-                                    <div class="mb-2 text-2xl" aria-hidden="true">💬</div>
-                                    <div class="text-sm font-semibold text-sh-s900">Support</div>
-                                </a>
-                                <button type="button" class="rounded-xl border border-sh-s200 p-4 text-center transition-colors hover:border-sh-orange hover:bg-sh-orange-lt" data-modal-open="add-product-modal">
-                                    <div class="mb-2 text-2xl" aria-hidden="true">📸</div>
-                                    <div class="text-sm font-semibold text-sh-s900">List Product</div>
+                                <button type="button" class="sh-dash-row text-left hover:border-sh-blue/40" data-modal-open="add-product-modal">
+                                    <span class="text-sm font-semibold text-sh-s900">List a product</span>
+                                    <span class="text-[12px] text-sh-s400">New listing</span>
                                 </button>
+                                <a href="{{ route('site.quote') }}" class="sh-dash-row hover:border-sh-blue/40">
+                                    <span class="text-sm font-semibold text-sh-s900">Delivery quote</span>
+                                    <span class="text-[12px] text-sh-s400">CRS rates</span>
+                                </a>
+                                <a href="{{ route('site.contact') }}" class="sh-dash-row hover:border-sh-blue/40">
+                                    <span class="text-sm font-semibold text-sh-s900">Support</span>
+                                    <span class="text-[12px] text-sh-s400">Contact</span>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div id="dash-products" class="sh-dash-panel hidden">
-                    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <h2 class="text-lg font-bold text-sh-s900">My Products</h2>
-                            <p class="text-[13px] text-sh-s500">Manage your active listings</p>
+                            <h2 class="sh-dash-page-title">Products</h2>
+                            <p class="sh-dash-page-copy">Active listings on your storefront.</p>
                         </div>
-                        <button type="button" class="sh-btn sh-btn-blue" data-modal-open="add-product-modal">+ Add Product</button>
+                        <button type="button" class="sh-btn sh-btn-blue" data-modal-open="add-product-modal">Add product</button>
                     </div>
-                    <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-4 md:p-6">
+                    <div class="sh-dash-card p-3 md:p-4">
                         <div id="dash-products-list"></div>
                     </div>
                 </div>
 
                 <div id="dash-orders" class="sh-dash-panel hidden">
-                    <h2 class="mb-4 text-lg font-bold text-sh-s900">Orders</h2>
-                    <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-4 md:p-6">
+                    <div class="mb-6">
+                        <h2 class="sh-dash-page-title">Orders</h2>
+                        <p class="sh-dash-page-copy">Update fulfillment as items move from processing to delivered.</p>
+                    </div>
+                    <div class="sh-dash-card p-3 md:p-4">
                         <div id="dash-orders-tab-list"></div>
                     </div>
                 </div>
 
                 <div id="dash-payouts" class="sh-dash-panel hidden">
-                    <h2 class="mb-4 text-lg font-bold text-sh-s900">Payouts</h2>
-                    <div class="space-y-6">
-                        <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-6">
-                            <p id="dash-payout-note" class="mb-4 text-[13px] text-sh-s500">Payouts release Fridays after CRS delivery confirmation. Stripe Connect ships in Phase 3.</p>
-                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                                <div class="rounded-xl bg-sh-green-bg p-4"><div class="text-xs text-sh-s500">Available</div><div id="dash-payout-available" class="text-2xl font-black text-sh-green">$0</div></div>
-                                <div class="rounded-xl bg-sh-s50 p-4"><div class="text-xs text-sh-s500">Pending</div><div id="dash-payout-pending" class="text-2xl font-black text-sh-s900">$0</div></div>
-                                <div class="rounded-xl bg-sh-s50 p-4"><div class="text-xs text-sh-s500">Total paid</div><div id="dash-payout-paid" class="text-2xl font-black text-sh-s900">$0</div></div>
-                            </div>
-                            <button type="button" class="sh-btn sh-btn-orange mt-6" disabled title="Stripe Connect ships in Phase 3">Request Payout →</button>
+                    <div class="mb-6">
+                        <h2 class="sh-dash-page-title">Payouts</h2>
+                        <p id="dash-payout-note" class="sh-dash-page-copy">Payouts release Fridays after CRS delivery confirmation. Stripe Connect ships in Phase 3.</p>
+                    </div>
+                    <div class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                        <div class="sh-dash-kpi">
+                            <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-sh-s400">Available</div>
+                            <div id="dash-payout-available" class="mt-2 text-2xl font-bold text-sh-green">$0</div>
                         </div>
-                        <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-6">
-                            <div class="mb-4 flex items-center justify-between gap-3">
-                                <div>
-                                    <h3 class="text-sm font-bold text-sh-s900">Payout bank accounts</h3>
-                                    <p class="text-[12px] text-sh-s500">Last 4 digits only. Full account and routing numbers are never stored.</p>
-                                </div>
-                                <button type="button" class="sh-btn sh-btn-sm sh-btn-blue" data-open-bank-modal>Add bank</button>
-                            </div>
-                            <div id="dash-banks-list" class="space-y-3"></div>
+                        <div class="sh-dash-kpi">
+                            <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-sh-s400">Pending</div>
+                            <div id="dash-payout-pending" class="mt-2 text-2xl font-bold text-sh-s900">$0</div>
                         </div>
+                        <div class="sh-dash-kpi">
+                            <div class="text-[11px] font-semibold uppercase tracking-[0.14em] text-sh-s400">Paid</div>
+                            <div id="dash-payout-paid" class="mt-2 text-2xl font-bold text-sh-s900">$0</div>
+                        </div>
+                    </div>
+                    <button type="button" class="sh-btn sh-btn-outline mb-6" disabled title="Stripe Connect ships in Phase 3">Request payout</button>
+                    <div class="sh-dash-card p-5">
+                        <div class="mb-4 flex items-center justify-between gap-3">
+                            <div>
+                                <h3 class="text-sm font-semibold text-sh-s900">Bank accounts</h3>
+                                <p class="text-[12px] text-sh-s500">Last 4 digits only. Full account numbers are never stored.</p>
+                            </div>
+                            <button type="button" class="sh-btn sh-btn-sm sh-btn-blue" data-open-bank-modal>Add bank</button>
+                        </div>
+                        <div id="dash-banks-list" class="space-y-2"></div>
                     </div>
                 </div>
 
                 <div id="dash-vouchers" class="sh-dash-panel hidden">
-                    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <h2 class="text-lg font-bold text-sh-s900">Store vouchers</h2>
-                            <p class="text-[13px] text-sh-s500">Coupons members can redeem on your listings.</p>
+                            <h2 class="sh-dash-page-title">Vouchers</h2>
+                            <p class="sh-dash-page-copy">Store coupons members can redeem in My Account.</p>
                         </div>
                         <button type="button" class="sh-btn sh-btn-blue" data-open-voucher-modal>Create voucher</button>
                     </div>
-                    <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-4 md:p-6">
+                    <div class="sh-dash-card p-3 md:p-4">
                         <div id="dash-vouchers-list"></div>
                     </div>
                 </div>
 
                 <div id="dash-settings" class="sh-dash-panel hidden">
-                    <h2 class="mb-4 text-lg font-bold text-sh-s900">Store Settings</h2>
-                    <div class="max-w-2xl rounded-2xl border-[1.5px] border-sh-s200 bg-white p-6">
-                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div class="sh-form-field mb-0 sm:col-span-2">
-                                <label class="sh-form-label" for="set-store-name">Store Name</label>
-                                <input id="set-store-name" class="sh-form-input" type="text" placeholder="My Store">
-                            </div>
-                            <div class="sh-form-field mb-0 sm:col-span-2">
-                                <label class="sh-form-label" for="set-description">Description</label>
-                                <textarea id="set-description" class="sh-form-input resize-none" rows="3" placeholder="Tell shoppers about your store"></textarea>
-                            </div>
-                            <div class="sh-form-field mb-0">
-                                <label class="sh-form-label" for="set-city">City</label>
-                                <input id="set-city" class="sh-form-input" type="text" placeholder="Dallas">
-                            </div>
-                            <div class="sh-form-field mb-0">
-                                <label class="sh-form-label" for="set-state">State</label>
-                                <input id="set-state" class="sh-form-input" type="text" maxlength="40" placeholder="TX">
-                            </div>
-                            <div class="sh-form-field mb-0">
-                                <label class="sh-form-label" for="set-business-type">Business type</label>
-                                <input id="set-business-type" class="sh-form-input" type="text" placeholder="Reseller">
-                            </div>
-                            <div class="sh-form-field mb-0">
-                                <label class="sh-form-label" for="set-email">Email</label>
-                                <input id="set-email" class="sh-form-input" type="email" disabled>
-                            </div>
-                            <label class="flex items-center gap-2 text-[13px] text-sh-s700 sm:col-span-2">
-                                <input id="set-onsite" type="checkbox" class="h-4 w-4 rounded border-sh-s300 text-sh-blue">
-                                Accept onsite showroom visits
-                            </label>
-                            <div class="sh-form-field mb-0 sm:col-span-2">
-                                <label class="sh-form-label" for="set-returns">Returns policy</label>
-                                <textarea id="set-returns" class="sh-form-input resize-none" rows="3" placeholder="Returns accepted within 7 days…"></textarea>
-                            </div>
-                            <div class="sh-form-field mb-0 sm:col-span-2">
-                                <label class="sh-form-label" for="set-shipping">Shipping policy</label>
-                                <textarea id="set-shipping" class="sh-form-input resize-none" rows="3" placeholder="CRS delivery after purchase…"></textarea>
+                    <div class="mb-6">
+                        <h2 class="sh-dash-page-title">Settings</h2>
+                        <p class="sh-dash-page-copy">Store profile, location, and customer-facing policies.</p>
+                    </div>
+                    <div class="grid max-w-4xl gap-5 lg:grid-cols-2">
+                        <div class="sh-dash-card p-5 lg:col-span-2">
+                            <h3 class="mb-4 text-sm font-semibold text-sh-s900">Store profile</h3>
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div class="sh-form-field mb-0 sm:col-span-2">
+                                    <label class="sh-form-label" for="set-store-name">Store name</label>
+                                    <input id="set-store-name" class="sh-form-input" type="text" placeholder="My Store">
+                                </div>
+                                <div class="sh-form-field mb-0 sm:col-span-2">
+                                    <label class="sh-form-label" for="set-description">Description</label>
+                                    <textarea id="set-description" class="sh-form-input resize-none" rows="3" placeholder="Tell shoppers about your store"></textarea>
+                                </div>
+                                <div class="sh-form-field mb-0">
+                                    <label class="sh-form-label" for="set-city">City</label>
+                                    <input id="set-city" class="sh-form-input" type="text" placeholder="Dallas">
+                                </div>
+                                <div class="sh-form-field mb-0">
+                                    <label class="sh-form-label" for="set-state">State</label>
+                                    <input id="set-state" class="sh-form-input" type="text" maxlength="40" placeholder="TX">
+                                </div>
+                                <div class="sh-form-field mb-0">
+                                    <label class="sh-form-label" for="set-business-type">Business type</label>
+                                    <input id="set-business-type" class="sh-form-input" type="text" placeholder="Reseller">
+                                </div>
+                                <div class="sh-form-field mb-0">
+                                    <label class="sh-form-label" for="set-email">Email</label>
+                                    <input id="set-email" class="sh-form-input" type="email" disabled>
+                                </div>
+                                <label class="flex items-center gap-2 text-[13px] text-sh-s700 sm:col-span-2">
+                                    <input id="set-onsite" type="checkbox" class="h-4 w-4 rounded border-sh-s300 text-sh-blue">
+                                    Accept onsite showroom visits
+                                </label>
                             </div>
                         </div>
-                        <button type="button" class="sh-btn sh-btn-blue mt-6" data-save-settings>Save Settings</button>
+                        <div class="sh-dash-card p-5 lg:col-span-2">
+                            <h3 class="mb-4 text-sm font-semibold text-sh-s900">Policies</h3>
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div class="sh-form-field mb-0">
+                                    <label class="sh-form-label" for="set-returns">Returns</label>
+                                    <textarea id="set-returns" class="sh-form-input resize-none" rows="4" placeholder="Returns accepted within 7 days…"></textarea>
+                                </div>
+                                <div class="sh-form-field mb-0">
+                                    <label class="sh-form-label" for="set-shipping">Shipping</label>
+                                    <textarea id="set-shipping" class="sh-form-input resize-none" rows="4" placeholder="CRS delivery after purchase…"></textarea>
+                                </div>
+                            </div>
+                            <button type="button" class="sh-btn sh-btn-blue mt-5" data-save-settings>Save settings</button>
+                        </div>
                     </div>
                 </div>
 
                 <div id="dash-distcatalog" class="sh-dash-panel hidden">
-                    <h2 class="mb-2 text-lg font-bold text-sh-s900">🏭 Distribution Catalog</h2>
-                    <p class="mb-6 text-[13px] text-sh-s500">Import wholesale inventory from verified distributors at reseller markup.</p>
-                    <div class="overflow-x-auto rounded-2xl border-[1.5px] border-sh-s200 bg-white">
+                    <div class="mb-6">
+                        <h2 class="sh-dash-page-title">Distribution catalog</h2>
+                        <p class="sh-dash-page-copy">Import wholesale SKUs at reseller markup. Inventory uploads ship in Phase 5.</p>
+                    </div>
+                    <div class="sh-dash-card overflow-x-auto">
                         <table class="min-w-full text-left text-[13px]">
-                            <thead class="border-b border-sh-s100 bg-sh-s50 text-xs uppercase tracking-widest text-sh-s500">
+                            <thead class="border-b border-sh-s100 bg-sh-s50 text-[11px] font-semibold uppercase tracking-[0.12em] text-sh-s400">
                                 <tr>
                                     <th class="px-4 py-3">SKU</th>
                                     <th class="px-4 py-3">Product</th>
@@ -231,34 +316,51 @@
                                 </tr>
                             </thead>
                             <tbody id="dash-dist-catalog-body">
-                                <tr><td colspan="5" class="px-4 py-8 text-center text-[13px] text-sh-s400">Loading wholesale inventory…</td></tr>
+                                <tr><td colspan="5" class="px-4 py-10 text-center text-[13px] text-sh-s400">Loading wholesale inventory…</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
                 <div id="dash-myimports" class="sh-dash-panel hidden">
-                    <h2 class="mb-4 text-lg font-bold text-sh-s900">My Import Orders</h2>
-                    <p id="dash-imports-list" class="rounded-2xl border border-sh-s200 bg-white p-8 text-center text-[13px] text-sh-s500">No import orders yet. Browse the Distribution Catalog to import wholesale inventory.</p>
+                    <div class="mb-6">
+                        <h2 class="sh-dash-page-title">Imports</h2>
+                        <p class="sh-dash-page-copy">Wholesale SKUs you have imported into your catalog.</p>
+                    </div>
+                    <div class="sh-dash-card p-4">
+                        <div id="dash-imports-list"></div>
+                    </div>
                 </div>
 
                 <div id="dash-mypurchases" class="sh-dash-panel hidden">
-                    <h2 class="mb-4 text-lg font-bold text-sh-s900">My Dist. Purchases</h2>
-                    <p id="dash-purchases-list" class="rounded-2xl border border-sh-s200 bg-white p-8 text-center text-[13px] text-sh-s500">Track your distribution catalog purchases here.</p>
+                    <div class="mb-6">
+                        <h2 class="sh-dash-page-title">Purchases</h2>
+                        <p class="sh-dash-page-copy">Distribution purchase history for this store.</p>
+                    </div>
+                    <div class="sh-dash-card p-4">
+                        <div id="dash-purchases-list"></div>
+                    </div>
                 </div>
 
                 <div id="dash-onsiteappts" class="sh-dash-panel hidden">
-                    <h2 class="mb-4 text-lg font-bold text-sh-s900">Onsite Visit Appointments</h2>
-                    <p id="dash-onsite-list" class="rounded-2xl border border-sh-s200 bg-white p-8 text-center text-[13px] text-sh-s500">Customer onsite visit requests will appear here when buyers book showroom appointments.</p>
+                    <div class="mb-6">
+                        <h2 class="sh-dash-page-title">Onsite visits</h2>
+                        <p class="sh-dash-page-copy">Confirm or cancel showroom appointments from buyers.</p>
+                    </div>
+                    <div class="sh-dash-card p-4">
+                        <div id="dash-onsite-list"></div>
+                    </div>
                 </div>
 
                 <div id="dash-openapi" class="sh-dash-panel hidden">
-                    <h2 class="mb-4 text-lg font-bold text-sh-s900">Open API</h2>
-                    <div class="rounded-2xl border-[1.5px] border-sh-s200 bg-white p-6">
-                        <p class="mb-4 text-[13px] text-sh-s500">Issue a store token for inventory sync. The plain key is shown once; we keep only a masked preview.</p>
-                        <div id="dash-openapi-status" class="rounded-xl bg-sh-s50 p-4 font-mono text-xs text-sh-s700">No key issued yet.</div>
-                        <div id="dash-openapi-plain" class="mt-3 hidden rounded-xl border border-sh-orange/40 bg-sh-orange-lt p-4 font-mono text-xs text-sh-s800"></div>
-                        <div class="mt-4 flex flex-wrap gap-2">
+                    <div class="mb-6">
+                        <h2 class="sh-dash-page-title">Open API</h2>
+                        <p class="sh-dash-page-copy">Issue a store token for inventory sync. The plain key is shown once.</p>
+                    </div>
+                    <div class="sh-dash-card max-w-2xl p-6">
+                        <div id="dash-openapi-status" class="rounded-xl bg-sh-s50 px-4 py-3 font-mono text-xs text-sh-s700">No key issued yet.</div>
+                        <div id="dash-openapi-plain" class="mt-3 hidden rounded-xl border border-sh-orange/30 bg-sh-orange-lt px-4 py-3 font-mono text-xs text-sh-s800"></div>
+                        <div class="mt-5 flex flex-wrap gap-2">
                             <button type="button" class="sh-btn sh-btn-blue" data-generate-openapi>Generate key</button>
                             <button type="button" class="sh-btn sh-btn-outline" data-revoke-openapi>Revoke</button>
                         </div>
