@@ -114,6 +114,7 @@
                                 <th scope="col" class="sh-pay-th sh-pay-th-left">Reference</th>
                                 <th scope="col" class="sh-pay-th sh-pay-th-left">Milestone / Event</th>
                                 <th scope="col" class="sh-pay-th sh-pay-th-left">Method</th>
+                                <th scope="col" class="sh-pay-th sh-pay-th-left">Tracking</th>
                                 <th scope="col" class="sh-pay-th sh-pay-th-right">Amount</th>
                                 <th scope="col" class="sh-pay-th sh-pay-th-right">Status</th>
                             </tr>
@@ -127,6 +128,7 @@
                                     <td class="sh-pay-td sh-pay-td-left">{{ $entry['reference'] }}</td>
                                     <td class="sh-pay-td sh-pay-td-left">{{ $entry['milestone'] }}</td>
                                     <td class="sh-pay-td sh-pay-td-left">{{ $entry['method'] }}</td>
+                                    <td class="sh-pay-td sh-pay-td-left whitespace-nowrap font-mono text-xs">{{ $entry['tracking'] ?? '—' }}</td>
                                     <td class="sh-pay-td sh-pay-td-right sh-pay-amount">${{ number_format($entry['amount']) }}</td>
                                     <td class="sh-pay-td sh-pay-td-right">
                                         <span @class([
